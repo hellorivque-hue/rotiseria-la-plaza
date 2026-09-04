@@ -1,0 +1,103 @@
+{
+  "nombre": "Rotisería La Plaza",
+  "lema": "Todo al horno",
+  "descripcionCorta": "Rotisería de barrio en Punta Alta: todo al horno y un menú distinto cada día.",
+  "descripcionLarga": "Comida casera hecha al horno, con menú diario que cambia todos los días. Minutas, milanesas y supremas rellenas, pastas caseras, tartas, empanadas, pizzas, ensaladas y postres. Delivery propio en Punta Alta y retiro en el local de Brown 406.",
+  "direccion": {
+    "calle": "Brown 406",
+    "localidad": "Punta Alta",
+    "partido": "Coronel Rosales",
+    "provincia": "Buenos Aires",
+    "codigoPostal": "B8109",
+    "pais": "AR",
+    "completa": "Brown 406, Punta Alta (B8109), Buenos Aires"
+  },
+  "coordenadas": {
+    "lat": -38.8797,
+    "lng": -62.0747,
+    "aproximadas": true
+  },
+  "telefono": {
+    "visible": "2932 54-0100",
+    "link": "+5492932540100",
+    "whatsapp": "5492932540100"
+  },
+  "zonaHoraria": "America/Argentina/Buenos_Aires",
+  "horarios": [
+    {
+      "dia": "lunes",
+      "nombre": "Lunes",
+      "turnos": [
+        { "desde": "11:00", "hasta": "14:00" },
+        { "desde": "20:00", "hasta": "22:30" }
+      ]
+    },
+    {
+      "dia": "martes",
+      "nombre": "Martes",
+      "turnos": [
+        { "desde": "11:00", "hasta": "14:00" },
+        { "desde": "20:00", "hasta": "22:30" }
+      ]
+    },
+    {
+      "dia": "miercoles",
+      "nombre": "Miércoles",
+      "turnos": [
+        { "desde": "11:00", "hasta": "14:00" },
+        { "desde": "20:00", "hasta": "22:30" }
+      ]
+    },
+    {
+      "dia": "jueves",
+      "nombre": "Jueves",
+      "turnos": [
+        { "desde": "11:00", "hasta": "14:00" },
+        { "desde": "20:00", "hasta": "22:30" }
+      ]
+    },
+    {
+      "dia": "viernes",
+      "nombre": "Viernes",
+      "turnos": [
+        { "desde": "11:00", "hasta": "14:00" },
+        { "desde": "20:00", "hasta": "22:30" }
+      ]
+    },
+    {
+      "dia": "sabado",
+      "nombre": "Sábado",
+      "turnos": [
+        { "desde": "11:00", "hasta": "14:00" },
+        { "desde": "20:00", "hasta": "22:30" }
+      ]
+    },
+    {
+      "dia": "domingo",
+      "nombre": "Domingo",
+      "turnos": []
+    }
+  ],
+  "horariosTexto": "Lunes a sábado de 11:00 a 14:00 y de 20:00 a 22:30. Domingos cerrado.",
+  "delivery": {
+    "propio": true,
+    "radioLimitado": true,
+    "descripcion": "Tenemos delivery propio, pero llegamos hasta cierto radio: no cubrimos toda la ciudad. Antes de pedir, escribinos por WhatsApp con tu dirección y te confirmamos si llegamos.",
+    "costoEnvio": null,
+    "zonas": []
+  },
+  "redes": {
+    "instagram": {
+      "usuario": "@rotiserialaplaza.mp",
+      "url": "https://www.instagram.com/rotiserialaplaza.mp/"
+    }
+  },
+  "mediosDePago": null,
+  "rangoPrecios": "$$",
+  "reputacion": {
+    "fuente": "Google Maps",
+    "puntaje": 4.3,
+    "cantidadOpiniones": 35
+  },
+  "datosEnCarga": true
+}

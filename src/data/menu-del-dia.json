@@ -1,0 +1,58 @@
+[
+  {
+    "dia": "lunes",
+    "nombre": "Lunes",
+    "principal": null,
+    "guarnicion": null,
+    "destacado": null,
+    "precio": null
+  },
+  {
+    "dia": "martes",
+    "nombre": "Martes",
+    "principal": null,
+    "guarnicion": null,
+    "destacado": null,
+    "precio": null
+  },
+  {
+    "dia": "miercoles",
+    "nombre": "Miércoles",
+    "principal": null,
+    "guarnicion": null,
+    "destacado": null,
+    "precio": null
+  },
+  {
+    "dia": "jueves",
+    "nombre": "Jueves",
+    "principal": null,
+    "guarnicion": null,
+    "destacado": null,
+    "precio": null
+  },
+  {
+    "dia": "viernes",
+    "nombre": "Viernes",
+    "principal": null,
+    "guarnicion": null,
+    "destacado": null,
+    "precio": null
+  },
+  {
+    "dia": "sabado",
+    "nombre": "Sábado",
+    "principal": null,
+    "guarnicion": null,
+    "destacado": null,
+    "precio": null
+  },
+  {
+    "dia": "domingo",
+    "nombre": "Domingo",
+    "principal": null,
+    "guarnicion": null,
+    "destacado": null,
+    "precio": null
+  }
+]

@@ -1,0 +1,193 @@
+---
+/**
+ * Menu del dia: la seccion estrella.
+ *
+ * Ojo con una trampa tipica: el sitio es estatico, se compila una vez. Si
+ * marcaramos "hoy" en el build, un sitio compilado un lunes mostraria "lunes"
+ * toda la semana. Por eso se renderizan los siete dias y el navegador decide
+ * cual es hoy. Sin JavaScript se ve igual la semana completa, solo que sin el
+ * destacado.
+ */
+import { menuSemanal, negocio, linkWhatsApp } from '../lib/datos';
+import { precio } from '../lib/formato';
+import { ORDEN_DIAS } from '../lib/horarios';
+
+const hayMenuCargado = menuSemanal.some((d) => d.principal);
+
+// Se ordenan de lunes a domingo, no como esten en el JSON.
+const ordenSemana = [...ORDEN_DIAS.slice(1), ORDEN_DIAS[0]];
+const dias = [...menuSemanal].sort(
+  (a, b) => ordenSemana.indexOf(a.dia) - ordenSemana.indexOf(b.dia),
+);
+
+const consulta = `¡Hola ${negocio.nombre}! ¿Qué menú hay hoy?`;
+---
+
+<section id="menu-del-dia" class="scroll-mt-20 bg-crema-hueso py-12 sm:py-16">
+  <div class="contenedor">
+    <header class="max-w-2xl">
+      <p class="text-sm font-bold tracking-[0.2em] text-ladrillo uppercase">
+        Todo al horno
+      </p>
+      <h2 class="titulo-seccion mt-2 text-tinta">El menú de la semana</h2>
+      <p class="mt-3 text-lg text-tinta-suave">
+        Cambia todos los días. El de hoy va primero.
+      </p>
+    </header>
+
+    {
+      !hayMenuCargado ? (
+        <div class="tarjeta mt-8 border-dashed border-ladrillo/40 p-6 text-center sm:p-10">
+          <p class="font-display text-2xl font-bold text-ladrillo">
+            Todavía no cargamos el menú de esta semana
+          </p>
+          <p class="mx-auto mt-3 max-w-lg text-tinta-suave">
+            Escribinos por WhatsApp y te contamos qué hay hoy. Cambia todos los
+            días y siempre es al horno.
+          </p>
+          <a
+            href={linkWhatsApp(consulta)}
+            target="_blank"
+            rel="noopener"
+            class="boton boton-primario mt-6"
+          >
+            Preguntar qué hay hoy
+          </a>
+        </div>
+      ) : (
+        <>
+          <p
+            class="mt-8 hidden rounded-xl bg-white px-4 py-3 text-tinta-suave shadow-[var(--shadow-carta)]"
+            data-resumen-hoy
+            aria-live="polite"
+          />
+
+          <ul class="mt-6 flex flex-col gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
+            {dias.map((dia, i) => (
+              <li
+                class="flex"
+                style={`order: ${i}`}
+                data-dia={dia.dia}
+                data-nombre={dia.nombre}
+                data-principal={dia.principal ?? ''}
+                data-guarnicion={dia.guarnicion ?? ''}
+              >
+                <article class="tarjeta flex w-full flex-col gap-3 p-5 transition-shadow [&.es-hoy]:border-ladrillo [&.es-hoy]:border-2 [&.es-hoy]:bg-white [&.es-hoy]:shadow-[var(--shadow-flotante)]">
+                  <div class="flex items-start justify-between gap-3">
+                    <h3 class="font-display text-xl font-bold text-tinta">
+                      {dia.nombre}
+                    </h3>
+                    <p
+                      class="hidden shrink-0 rounded-full bg-ladrillo px-2.5 py-1 text-xs font-bold tracking-wide text-white uppercase [.es-hoy_&]:block"
+                      data-etiqueta-hoy
+                    >
+                      Hoy
+                    </p>
+                  </div>
+
+                  {dia.principal ? (
+                    <div class="grow">
+                      <p class="text-lg leading-snug font-semibold text-tinta">
+                        {dia.principal}
+                      </p>
+                      {dia.guarnicion && (
+                        <p class="mt-1 text-tinta-suave">con {dia.guarnicion}</p>
+                      )}
+                      {dia.destacado && (
+                        <p class="mt-3 inline-block rounded-full bg-mostaza/25 px-3 py-1 text-sm font-semibold text-tinta">
+                          {dia.destacado}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p class="grow text-tinta-suave">
+                      {dia.dia === 'domingo'
+                        ? 'Los domingos no abrimos.'
+                        : 'A confirmar. Consultanos por WhatsApp.'}
+                    </p>
+                  )}
+
+                  {dia.principal && (
+                    <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-crema-borde pt-3">
+                      <p class="font-display text-lg font-bold text-ladrillo">
+                        {precio(dia.precio)}
+                      </p>
+
+                      <button
+                        type="button"
+                        class="boton boton-primario solo-js !min-h-11 !px-4 !py-2 text-sm"
+                        data-agregar
+                        data-id={`menu-${dia.dia}`}
+                        data-item-nombre={`Menú del ${dia.nombre.toLowerCase()}: ${dia.principal}`}
+                        data-precio={dia.precio ?? ''}
+                        data-origen="menu"
+                      >
+                        Pedir este menú
+                      </button>
+
+                      <a
+                        href={linkWhatsApp(
+                          `¡Hola ${negocio.nombre}! Quería pedir el menú del ${dia.nombre.toLowerCase()}: ${dia.principal}.`,
+                        )}
+                        target="_blank"
+                        rel="noopener"
+                        class="boton boton-primario sin-js !min-h-11 !px-4 !py-2 text-sm"
+                      >
+                        Pedir este menú
+                      </a>
+                    </div>
+                  )}
+                </article>
+              </li>
+            ))}
+          </ul>
+
+          <p class="mt-6 text-sm text-tinta-suave">
+            Los precios son informativos: confirmalos al hacer el pedido.
+          </p>
+        </>
+      )
+    }
+  </div>
+</section>
+
+<script>
+  import { diaDeHoy } from '../lib/horarios';
+  import negocio from '../data/negocio.json';
+
+  /**
+   * Marca el dia de hoy y lo pone primero en la grilla.
+   * Corre en el navegador porque el sitio es estatico: el build no sabe que
+   * dia va a ser cuando alguien entre.
+   */
+  function marcarHoy() {
+    const hoy = diaDeHoy(negocio.zonaHoraria);
+    const tarjetas = document.querySelectorAll<HTMLLIElement>('[data-dia]');
+    if (tarjetas.length === 0) return;
+
+    for (const li of tarjetas) {
+      const esHoy = li.dataset.dia === hoy;
+      li.querySelector('article')?.classList.toggle('es-hoy', esHoy);
+      // `order` negativo lo lleva al principio sin tocar el HTML.
+      li.style.order = esHoy ? '-1' : li.style.order;
+
+      if (esHoy) {
+        const resumen = document.querySelector<HTMLElement>('[data-resumen-hoy]');
+        const principal = li.dataset.principal;
+        if (resumen && principal) {
+          const guarnicion = li.dataset.guarnicion;
+          resumen.textContent = guarnicion
+            ? `Hoy ${li.dataset.nombre?.toLowerCase()}: ${principal} con ${guarnicion}.`
+            : `Hoy ${li.dataset.nombre?.toLowerCase()}: ${principal}.`;
+          resumen.classList.remove('hidden');
+        }
+      }
+    }
+  }
+
+  marcarHoy();
+  // Si alguien deja la pestana abierta cruzando la medianoche.
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) marcarHoy();
+  });
+</script>

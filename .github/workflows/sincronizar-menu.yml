@@ -1,0 +1,72 @@
+# Sincroniza el menú y los precios desde la planilla de Google.
+#
+# COMO FUNCIONA
+#   1. Cada 20 minutos (en horario del local) lee la planilla.
+#   2. Si algo cambió, guarda el cambio en el repositorio.
+#   3. Ese guardado hace que Netlify vuelva a publicar el sitio solo.
+#
+# Si no cambió nada, no guarda ni publica: no gasta minutos al pedo.
+#
+# El resultado para el local: cargan el menú en la planilla y en unos minutos
+# está online. Y como cada cambio queda guardado, siempre se puede ver qué se
+# cambió y volver atrás.
+#
+# CONFIGURAR (una sola vez, en Settings → Secrets and variables → Actions →
+# pestaña "Variables"):
+#   PLANILLA_MENU_URL     → URL del CSV publicado de la hoja "menu"
+#   PLANILLA_PRECIOS_URL  → URL del CSV publicado de la hoja "precios"
+#
+# Van como Variables y no como Secrets porque no son datos sensibles: la
+# planilla ya está publicada. Ponerlas como Variables deja ver la URL si hay
+# que revisarla.
+
+name: Sincronizar menú desde la planilla
+
+on:
+  schedule:
+    # Cada 20 minutos entre las 10:00 y las 23:59 de Argentina (UTC-3).
+    # GitHub usa UTC, por eso va de 13 a 02.
+    - cron: '0,20,40 13-23,0-2 * * *'
+  # Botón "Run workflow" para publicar en el momento, sin esperar.
+  workflow_dispatch:
+
+# Permiso para guardar los cambios en el repositorio.
+permissions:
+  contents: write
+
+# Si se dispara dos veces junta, corre una sola.
+concurrency:
+  group: sincronizar-menu
+  cancel-in-progress: true
+
+jobs:
+  sincronizar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Leer la planilla
+        env:
+          PLANILLA_MENU_URL: ${{ vars.PLANILLA_MENU_URL }}
+          PLANILLA_PRECIOS_URL: ${{ vars.PLANILLA_PRECIOS_URL }}
+        run: node scripts/traer-menu.mjs
+
+      - name: Guardar el cambio si hay algo nuevo
+        run: |
+          if [ -z "$(git status --porcelain src/data)" ]; then
+            echo "Sin cambios en el menú. No se publica nada."
+            exit 0
+          fi
+
+          git config user.name "Menú automático"
+          git config user.email "actions@github.com"
+          git add src/data
+          git commit -m "Menú y precios actualizados desde la planilla"
+          git push
+
+          echo "Cambios guardados. Netlify va a publicar el sitio solo."

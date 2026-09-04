@@ -1,0 +1,198 @@
+---
+/**
+ * La carta permanente.
+ *
+ * Los chips de categoria son enlaces de verdad (<a href="#...">): navegan sin
+ * recargar, andan sin JavaScript y ya vienen con navegacion por teclado. El JS
+ * solo agrega el resaltado del chip de la seccion que estas mirando.
+ */
+import { cartaVisible, negocio, linkWhatsApp } from '../lib/datos';
+import { precio } from '../lib/formato';
+---
+
+<section id="carta" class="scroll-mt-20 py-12 sm:py-16">
+  <div class="contenedor">
+    <header class="max-w-2xl">
+      <p class="text-sm font-bold tracking-[0.2em] text-ladrillo uppercase">
+        Siempre disponible
+      </p>
+      <h2 class="titulo-seccion mt-2">La carta</h2>
+      <p class="mt-3 text-lg text-tinta-suave">
+        Además del menú del día, esto lo tenemos todos los días.
+      </p>
+    </header>
+  </div>
+
+  {
+    cartaVisible.length === 0 ? (
+      <div class="contenedor">
+        <p class="tarjeta mt-8 border-dashed p-6 text-tinta-suave">
+          Estamos cargando la carta. Mientras tanto, consultanos por WhatsApp.
+        </p>
+      </div>
+    ) : (
+      <>
+        <nav
+          aria-label="Categorías de la carta"
+          class="sticky top-16 z-30 mt-6 border-y border-crema-borde bg-crema/95 py-3 backdrop-blur"
+        >
+          <ul class="contenedor sin-barra flex gap-2 overflow-x-auto" data-chips>
+            {cartaVisible.map((cat) => (
+              <li class="shrink-0">
+                <a
+                  href={`#cat-${cat.id}`}
+                  class="inline-flex min-h-11 items-center rounded-full border border-crema-borde bg-white px-4 py-2 text-sm font-semibold whitespace-nowrap text-tinta-suave transition-colors hover:border-ladrillo hover:text-ladrillo aria-[current=true]:border-ladrillo aria-[current=true]:bg-ladrillo aria-[current=true]:text-white"
+                  data-chip={cat.id}
+                >
+                  {cat.nombre}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div class="contenedor mt-10 flex flex-col gap-12">
+          {cartaVisible.map((cat) => (
+            <section id={`cat-${cat.id}`} class="scroll-mt-36" data-categoria={cat.id}>
+              <h3 class="font-display text-2xl font-bold text-ladrillo sm:text-3xl">
+                {cat.nombre}
+              </h3>
+              {cat.descripcion && (
+                <p class="mt-1 text-tinta-suave">{cat.descripcion}</p>
+              )}
+
+              <ul class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {cat.items.map((item) => (
+                  <li class="tarjeta flex flex-col gap-3 p-5">
+                    <div class="flex items-start justify-between gap-3">
+                      <h4 class="font-display text-lg leading-snug font-bold text-tinta">
+                        {item.nombre}
+                      </h4>
+                      {item.recomendado && (
+                        <p class="shrink-0 rounded-full bg-mostaza/25 px-2.5 py-1 text-xs font-bold tracking-wide text-tinta uppercase">
+                          Recomendado
+                        </p>
+                      )}
+                    </div>
+
+                    {item.descripcion && (
+                      <p class="text-tinta-suave">{item.descripcion}</p>
+                    )}
+                    {item.unidad && (
+                      <p class="text-sm text-tinta-suave">{item.unidad}</p>
+                    )}
+
+                    <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-crema-borde pt-3">
+                      <p class="font-display text-lg font-bold text-ladrillo">
+                        {precio(item.precio)}
+                      </p>
+
+                      <button
+                        type="button"
+                        class="boton boton-primario solo-js !min-h-11 !px-4 !py-2 text-sm"
+                        data-agregar
+                        data-id={item.id}
+                        data-item-nombre={item.nombre}
+                        data-precio={item.precio ?? ''}
+                        data-origen="carta"
+                      >
+                        Agregar
+                      </button>
+
+                      <a
+                        href={linkWhatsApp(
+                          `¡Hola ${negocio.nombre}! Quería pedir: ${item.nombre}.`,
+                        )}
+                        target="_blank"
+                        rel="noopener"
+                        class="boton boton-primario sin-js !min-h-11 !px-4 !py-2 text-sm"
+                      >
+                        Pedir
+                      </a>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+
+        <p class="contenedor mt-8 text-sm text-tinta-suave">
+          Precios sujetos a cambio: confirmalos al hacer el pedido.
+        </p>
+      </>
+    )
+  }
+</section>
+
+<script>
+  /**
+   * Resalta el chip de la categoria que se esta viendo y lo deja a la vista
+   * dentro de la barra horizontal. Es solo una ayuda visual: si esto no corre,
+   * los chips siguen funcionando como enlaces.
+   */
+  const chips = new Map<string, HTMLAnchorElement>();
+  for (const chip of document.querySelectorAll<HTMLAnchorElement>('[data-chip]')) {
+    chips.set(chip.dataset.chip!, chip);
+  }
+
+  const secciones = document.querySelectorAll<HTMLElement>('[data-categoria]');
+
+  if (chips.size > 0 && secciones.length > 0) {
+    let activo = '';
+
+    const marcar = (id: string) => {
+      if (id === activo) return;
+      activo = id;
+
+      for (const [clave, chip] of chips) {
+        const esActivo = clave === id;
+        chip.setAttribute('aria-current', String(esActivo));
+        if (esActivo) acomodarBarra(chip);
+      }
+    };
+
+    /**
+     * Desplaza SOLO la barra de chips, nunca la pagina.
+     * (scrollIntoView movería el scroll vertical y haría saltar el sitio.)
+     */
+    const barra = document.querySelector<HTMLElement>('[data-chips]');
+
+    const acomodarBarra = (chip: HTMLAnchorElement) => {
+      if (!barra) return;
+      const objetivo =
+        chip.offsetLeft - barra.clientWidth / 2 + chip.offsetWidth / 2;
+      const maximo = barra.scrollWidth - barra.clientWidth;
+      if (maximo <= 0) return;
+      barra.scrollTo({
+        left: Math.max(0, Math.min(objetivo, maximo)),
+        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+          ? 'auto'
+          : 'smooth',
+      });
+    };
+
+    // Feedback inmediato al tocar un chip, sin esperar al scroll.
+    for (const [clave, chip] of chips) {
+      chip.addEventListener('click', () => marcar(clave));
+    }
+
+    // Arranca con la primera categoria marcada para que la barra nunca se vea
+    // "apagada" antes del primer scroll.
+    marcar([...chips.keys()][0]!);
+
+    const observador = new IntersectionObserver(
+      (entradas) => {
+        const visibles = entradas
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        const primera = visibles[0]?.target as HTMLElement | undefined;
+        if (primera?.dataset.categoria) marcar(primera.dataset.categoria);
+      },
+      // La franja de arriba, justo debajo del header y de los chips.
+      { rootMargin: '-180px 0px -60% 0px', threshold: 0 },
+    );
+
+    for (const seccion of secciones) observador.observe(seccion);
+  }
+</script>

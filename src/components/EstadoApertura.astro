@@ -1,0 +1,72 @@
+---
+/**
+ * Cartelito "Abierto ahora / Cerrado".
+ *
+ * Se renderiza en el build y despues, ya en el navegador, se recalcula con la
+ * hora real convertida a la zona horaria del local. Se refresca cada minuto,
+ * asi alguien que deja la pestana abierta no ve "Abierto" cuando ya cerro.
+ */
+import { negocio } from '../lib/datos';
+import { estadoApertura } from '../lib/horarios';
+
+interface Props {
+  class?: string;
+  /** "claro" = sobre fondo crema, "oscuro" = sobre fondo ladrillo. */
+  sobre?: 'claro' | 'oscuro';
+}
+
+const { class: clase = '', sobre = 'claro' } = Astro.props;
+const inicial = estadoApertura(negocio.horarios, negocio.zonaHoraria);
+
+const fondo =
+  sobre === 'claro'
+    ? 'bg-white/85 border-crema-borde text-tinta'
+    : 'bg-black/25 border-white/25 text-crema';
+const punto = inicial.abierto ? 'bg-verde-abierto' : 'bg-mostaza';
+---
+
+<p
+  class={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium ${fondo} ${clase}`}
+  data-estado-apertura
+>
+  <span
+    class={`inline-block size-2.5 shrink-0 rounded-full ${punto}`}
+    data-punto
+    aria-hidden="true"></span>
+  <span data-texto>{inicial.texto}</span>
+</p>
+
+<script>
+  import negocio from '../data/negocio.json';
+  import { estadoApertura } from '../lib/horarios';
+  import type { HorarioDia } from '../types';
+
+  const horarios = negocio.horarios as HorarioDia[];
+
+  function actualizar() {
+    const estado = estadoApertura(horarios, negocio.zonaHoraria);
+
+    for (const nodo of document.querySelectorAll<HTMLElement>('[data-estado-apertura]')) {
+      const texto = nodo.querySelector<HTMLElement>('[data-texto]');
+      const punto = nodo.querySelector<HTMLElement>('[data-punto]');
+
+      if (texto && texto.textContent !== estado.texto) {
+        texto.textContent = estado.texto;
+      }
+      if (punto) {
+        punto.classList.toggle('bg-verde-abierto', estado.abierto);
+        punto.classList.toggle('bg-mostaza', !estado.abierto);
+      }
+    }
+
+    // El carrito lee esto para avisar si el local esta cerrado.
+    document.documentElement.dataset.localAbierto = String(estado.abierto);
+    document.documentElement.dataset.localDetalle = estado.detalle;
+  }
+
+  actualizar();
+  setInterval(actualizar, 60_000);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) actualizar();
+  });
+</script>

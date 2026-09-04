@@ -1,0 +1,26 @@
+{
+  "name": "rotiseria-la-plaza",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sitio web de Rotiseria La Plaza - Punta Alta, Buenos Aires",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "build:fast": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "menu": "node scripts/traer-menu.mjs",
+    "plantillas": "node scripts/generar-plantillas.mjs"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/sitemap": "^3.2.1",
+    "@tailwindcss/vite": "^4.0.0",
+    "astro": "^5.1.1",
+    "sharp": "^0.33.5",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.2"
+  }
+}

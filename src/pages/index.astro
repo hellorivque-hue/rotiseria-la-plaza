@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import MenuDelDia from '../components/MenuDelDia.astro';
+import Carta from '../components/Carta.astro';
+import Promos from '../components/Promos.astro';
+import PorQue from '../components/PorQue.astro';
+import Delivery from '../components/Delivery.astro';
+import Instagram from '../components/Instagram.astro';
+import Ubicacion from '../components/Ubicacion.astro';
+import DatosEstructurados from '../components/DatosEstructurados.astro';
+
+const titulo = 'Rotisería La Plaza · Comida casera al horno y delivery en Punta Alta';
+const descripcion =
+  'Rotisería en Punta Alta: todo al horno, menú distinto cada día, minutas, pastas caseras, empanadas y pizzas. Delivery propio y retiro en Brown 406. Pedí por WhatsApp.';
+---
+
+<Base titulo={titulo} descripcion={descripcion} conCarrito>
+  <DatosEstructurados slot="head" />
+
+  <Hero />
+  <MenuDelDia />
+  <Carta />
+  <Promos />
+  <PorQue />
+  <Delivery />
+  <Instagram />
+  <Ubicacion />
+</Base>

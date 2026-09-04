@@ -1,0 +1,113 @@
+---
+/**
+ * Delivery y horarios.
+ *
+ * Los horarios salen de negocio.json, no estan escritos a mano: si cambian,
+ * se cambian en un solo lugar y se actualizan aca, en el pie y en el JSON-LD.
+ */
+import EstadoApertura from './EstadoApertura.astro';
+import { negocio, linkWhatsApp } from '../lib/datos';
+
+const consultaZona = `¡Hola ${negocio.nombre}! ¿Llegan con el delivery a mi barrio? Mi dirección es: `;
+const hayZonas = negocio.delivery.zonas.length > 0;
+---
+
+<section id="delivery" class="scroll-mt-20 bg-crema-hueso py-12 sm:py-16">
+  <div class="contenedor grid gap-8 lg:grid-cols-2 lg:gap-12">
+    <div>
+      <h2 class="titulo-seccion">Delivery y horarios</h2>
+
+      <p class="mt-4 text-lg text-tinta-suave">
+        {negocio.delivery.descripcion}
+      </p>
+
+      {
+        hayZonas && (
+          <div class="mt-5">
+            <h3 class="font-display text-lg font-bold">Zonas confirmadas</h3>
+            <ul class="mt-2 flex flex-wrap gap-2">
+              {negocio.delivery.zonas.map((zona) => (
+                <li class="rounded-full border border-crema-borde bg-white px-3 py-1.5 text-sm">
+                  {zona}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      <div class="tarjeta mt-6 p-5">
+        <h3 class="font-display text-lg font-bold">¿Llegamos a tu barrio?</h3>
+        <p class="mt-1 text-tinta-suave">
+          Mandanos tu dirección por WhatsApp y te confirmamos al toque. También
+          podés retirar el pedido por {negocio.direccion.calle}.
+        </p>
+        <a
+          href={linkWhatsApp(consultaZona)}
+          target="_blank"
+          rel="noopener"
+          class="boton boton-primario mt-4 w-full sm:w-auto"
+        >
+          Consultar mi zona
+        </a>
+        <p class="mt-3 text-sm text-tinta-suave">
+          {
+            negocio.delivery.costoEnvio
+              ? `Costo de envío: ${negocio.delivery.costoEnvio}.`
+              : 'El costo del envío te lo confirmamos por WhatsApp junto con el pedido.'
+          }
+        </p>
+      </div>
+    </div>
+
+    <div>
+      <div class="tarjeta overflow-hidden">
+        <div
+          class="flex flex-wrap items-center justify-between gap-3 border-b border-crema-borde px-5 py-4"
+        >
+          <h3 class="font-display text-lg font-bold">Horarios de atención</h3>
+          <EstadoApertura />
+        </div>
+
+        <table class="w-full text-left">
+          <caption class="sr-only">
+            Horarios de atención de {negocio.nombre}, de lunes a domingo
+          </caption>
+          <thead class="sr-only">
+            <tr>
+              <th scope="col">Día</th>
+              <th scope="col">Horario</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              negocio.horarios.map((dia) => (
+                <tr class="border-b border-crema-borde last:border-0">
+                  <th
+                    scope="row"
+                    class="px-5 py-3 text-left font-medium whitespace-nowrap"
+                  >
+                    {dia.nombre}
+                  </th>
+                  <td class="px-5 py-3 text-right">
+                    {dia.turnos.length === 0 ? (
+                      <span class="text-tinta-suave">Cerrado</span>
+                    ) : (
+                      <span class="tabular-nums">
+                        {dia.turnos.map((t) => `${t.desde} a ${t.hasta}`).join(' · ')}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <p class="mt-4 text-sm text-tinta-suave">
+        Los pedidos que entran fuera de horario los respondemos cuando abrimos.
+      </p>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,352 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Tipografias: subset latino, self-hosted en /public/fonts.
+   Origen: Bitter Variable e Inter Variable (Google Fonts / Fontsource, SIL OFL).
+   Solo se incluye el rango latino para que pesen poco.
+--------------------------------------------------------------------------- */
+@font-face {
+  font-family: "Bitter";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("/fonts/bitter-latin-variable.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("/fonts/inter-latin-variable.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ---------------------------------------------------------------------------
+   Fuentes de respaldo con las metricas ajustadas.
+
+   Mientras la fuente real se descarga, el navegador dibuja con la de respaldo.
+   Si ocupan distinto espacio, el texto "salta" cuando llega la buena: eso es
+   layout shift. Lighthouse marcaba 0,179 de CLS por exactamente esto.
+
+   Los numeros de abajo NO son a ojo: se midieron con canvas en este mismo
+   sitio, comparando el ancho y la caja de la fuente real contra la de respaldo
+   (Bitter vs Georgia, Inter vs Arial) y dividiendo.
+--------------------------------------------------------------------------- */
+@font-face {
+  font-family: "Bitter Respaldo";
+  src: local("Georgia"), local("Times New Roman"), local("Times");
+  size-adjust: 101.1%;
+  ascent-override: 92.97%;
+  descent-override: 26.71%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Inter Respaldo";
+  src: local("Arial"), local("Helvetica Neue"), local("Liberation Sans");
+  size-adjust: 103.72%;
+  ascent-override: 93.52%;
+  descent-override: 23.14%;
+  line-gap-override: 0%;
+}
+
+/* ---------------------------------------------------------------------------
+   Tokens de diseno. Paleta tomada del logo: rojo ladrillo, negro y crema.
+   El acento mostaza es el color de los CTA (contrasta con el rojo).
+   Todos los pares de texto/fondo usados en el sitio cumplen WCAG AA.
+--------------------------------------------------------------------------- */
+@theme {
+  --color-crema: #fcf6ec;
+  --color-crema-hueso: #f6ead6;
+  --color-crema-borde: #e7d7bd;
+
+  --color-tinta: #1a1310;
+  --color-tinta-suave: #5b4a40;
+
+  --color-ladrillo: #a21b12;
+  --color-ladrillo-oscuro: #7c120b;
+  --color-ladrillo-claro: #c33a2a;
+
+  --color-mostaza: #e9a11c;
+  --color-mostaza-oscuro: #c9860c;
+
+  --color-verde-abierto: #1f7a4d;
+
+  --font-display: "Bitter", "Bitter Respaldo", ui-serif, Georgia,
+    "Times New Roman", serif;
+  --font-sans: "Inter", "Inter Respaldo", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --radius-tarjeta: 1rem;
+
+  --shadow-carta: 0 1px 2px rgb(26 19 16 / 0.06), 0 8px 24px -12px rgb(26 19 16 / 0.25);
+  --shadow-flotante: 0 8px 30px -6px rgb(26 19 16 / 0.35);
+
+  --ease-suave: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
+@layer base {
+  :root {
+    color-scheme: light;
+    scroll-behavior: smooth;
+    /* Alto del header sticky, para los anclajes */
+    --alto-header: 4rem;
+    scroll-padding-top: calc(var(--alto-header) + 0.75rem);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-crema);
+    color: var(--color-tinta);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.015em;
+  }
+
+  /*
+    `text-wrap: balance` solo en los titulos grandes, que son pocos.
+    Estaba aplicado a todos los titulos y a todos los parrafos (`pretty`), y
+    medido con Lighthouse eso costaba mas de un segundo de Style & Layout en
+    CPU lenta: son algoritmos de corte de linea de varias pasadas.
+  */
+  h1,
+  h2 {
+    text-wrap: balance;
+  }
+
+  /* Foco visible y consistente en todo el sitio */
+  :focus-visible {
+    outline: 3px solid var(--color-ladrillo);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Componentes reutilizables
+--------------------------------------------------------------------------- */
+@layer components {
+  /* Todos los botones respetan el minimo tactil de 44px */
+  .boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.2;
+    text-align: center;
+    transition: transform 0.18s var(--ease-suave), background-color 0.18s ease,
+      box-shadow 0.18s ease, color 0.18s ease;
+    cursor: pointer;
+  }
+
+  .boton:active {
+    transform: translateY(1px);
+  }
+
+  .boton-primario {
+    background-color: var(--color-mostaza);
+    color: var(--color-tinta);
+    box-shadow: var(--shadow-carta);
+  }
+
+  .boton-primario:hover {
+    background-color: var(--color-mostaza-oscuro);
+  }
+
+  .boton-secundario {
+    background-color: var(--color-ladrillo);
+    color: #ffffff;
+  }
+
+  .boton-secundario:hover {
+    background-color: var(--color-ladrillo-oscuro);
+  }
+
+  .boton-fantasma {
+    background-color: transparent;
+    color: var(--color-ladrillo);
+    border: 2px solid currentColor;
+  }
+
+  .boton-fantasma:hover {
+    background-color: var(--color-crema-hueso);
+  }
+
+  .contenedor {
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .contenedor {
+      padding-inline: 2rem;
+    }
+  }
+
+  .tarjeta {
+    background-color: #fffdf8;
+    border: 1px solid var(--color-crema-borde);
+    border-radius: var(--radius-tarjeta);
+    box-shadow: var(--shadow-carta);
+  }
+
+  .titulo-seccion {
+    font-size: clamp(1.75rem, 1.2rem + 2.2vw, 2.75rem);
+  }
+
+  /* Solo para lectores de pantalla */
+  .visualmente-oculto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Utilidades sueltas
+--------------------------------------------------------------------------- */
+@utility textura-papel {
+  background-image: radial-gradient(
+      circle at 1px 1px,
+      rgb(162 27 18 / 0.05) 1px,
+      transparent 0
+    );
+  background-size: 22px 22px;
+}
+
+@utility sin-barra {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Progresivo: el sitio entero anda sin JavaScript.
+   Lo unico que necesita JS es el carrito, y todo eso lleva .solo-js
+--------------------------------------------------------------------------- */
+.no-js .solo-js {
+  display: none !important;
+}
+
+.js .sin-js {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Carrito
+--------------------------------------------------------------------------- */
+
+/* Deja lugar abajo para que el boton flotante no tape el pie de pagina. */
+.con-pedido body {
+  padding-bottom: 5.5rem;
+}
+
+@media (min-width: 640px) {
+  .con-pedido body {
+    padding-bottom: 6rem;
+  }
+}
+
+/* El panel es un <dialog> nativo: trae foco atrapado y Escape de fabrica. */
+dialog.panel-pedido {
+  width: 100%;
+  max-width: 30rem;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0 0 0 auto;
+  padding: 0;
+  border: 0;
+  background-color: var(--color-crema);
+  color: var(--color-tinta);
+  box-shadow: var(--shadow-flotante);
+}
+
+dialog.panel-pedido::backdrop {
+  background-color: rgb(26 19 16 / 0.55);
+}
+
+dialog.panel-pedido[open] {
+  animation: entrar-panel 0.28s var(--ease-suave);
+}
+
+dialog.panel-pedido[open]::backdrop {
+  animation: aparecer 0.28s ease;
+}
+
+@keyframes entrar-panel {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Le saca las flechitas al input de cantidad. */
+.cantidad-pedido::-webkit-outer-spin-button,
+.cantidad-pedido::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.cantidad-pedido {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}

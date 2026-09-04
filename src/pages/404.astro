@@ -1,0 +1,46 @@
+---
+/**
+ * 404. Con humor de rotiseria, pero util: el objetivo sigue siendo que lleguen
+ * al menu o al WhatsApp.
+ */
+import Base from '../layouts/Base.astro';
+import { negocio, linkWhatsApp } from '../lib/datos';
+---
+
+<Base
+  titulo={`Esta página se la comieron · ${negocio.nombre}`}
+  descripcion="No encontramos esta página. Volvé al menú del día o escribinos por WhatsApp."
+  noIndexar
+>
+  <section class="contenedor py-16 sm:py-24">
+    <div class="mx-auto max-w-xl text-center">
+      <p class="font-display text-7xl font-extrabold text-ladrillo sm:text-8xl">404</p>
+
+      <h1 class="titulo-seccion mt-4">Esta página se la comieron</h1>
+
+      <p class="mt-4 text-lg text-tinta-suave">
+        No la encontramos por ningún lado. Debe haber salido del horno y alguien la
+        agarró antes que vos.
+      </p>
+
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <a href="/#menu-del-dia" class="boton boton-primario">Ver el menú de hoy</a>
+        <a
+          href={linkWhatsApp(`¡Hola ${negocio.nombre}! Quería hacer un pedido.`)}
+          target="_blank"
+          rel="noopener"
+          class="boton boton-fantasma"
+        >
+          Pedir por WhatsApp
+        </a>
+      </div>
+
+      <p class="mt-8 text-tinta-suave">
+        O volvé al <a
+          href="/"
+          class="font-medium text-ladrillo underline underline-offset-4">inicio</a
+        >.
+      </p>
+    </div>
+  </section>
+</Base>

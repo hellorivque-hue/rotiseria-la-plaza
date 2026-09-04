@@ -1,0 +1,58 @@
+[
+  {
+    "dia": "lunes",
+    "nombre": "Lunes",
+    "principal": "TODO: plato principal del lunes",
+    "guarnicion": "TODO: guarnición",
+    "destacado": null,
+    "precio": null
+  },
+  {
+    "dia": "martes",
+    "nombre": "Martes",
+    "principal": "TODO: plato principal del martes",
+    "guarnicion": "TODO: guarnición",
+    "destacado": "El más pedido",
+    "precio": null
+  },
+  {
+    "dia": "miercoles",
+    "nombre": "Miércoles",
+    "principal": "TODO: plato principal del miércoles",
+    "guarnicion": "TODO: guarnición",
+    "destacado": null,
+    "precio": null
+  },
+  {
+    "dia": "jueves",
+    "nombre": "Jueves",
+    "principal": "TODO: plato principal del jueves",
+    "guarnicion": "TODO: guarnición",
+    "destacado": null,
+    "precio": null
+  },
+  {
+    "dia": "viernes",
+    "nombre": "Viernes",
+    "principal": "TODO: plato principal del viernes",
+    "guarnicion": "TODO: guarnición",
+    "destacado": null,
+    "precio": null
+  },
+  {
+    "dia": "sabado",
+    "nombre": "Sábado",
+    "principal": "TODO: plato principal del sábado",
+    "guarnicion": "TODO: guarnición",
+    "destacado": null,
+    "precio": null
+  },
+  {
+    "dia": "domingo",
+    "nombre": "Domingo",
+    "principal": null,
+    "guarnicion": null,
+    "destacado": null,
+    "precio": null
+  }
+]

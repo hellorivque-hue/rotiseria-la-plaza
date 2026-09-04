@@ -1,0 +1,114 @@
+---
+/**
+ * Pie del sitio: datos de contacto, horarios y redes.
+ */
+import Logo from './Logo.astro';
+import { negocio, linkWhatsApp, urlComoLlegar } from '../lib/datos';
+
+const anio = new Date().getFullYear();
+const enHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
+const base = enHome ? '' : '/';
+---
+
+<footer class="mt-16 bg-tinta text-crema/85">
+  <div class="contenedor grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="sm:col-span-2 lg:col-span-1">
+      <Logo tamano="grande" sobre="oscuro" />
+      <p class="mt-4 max-w-xs text-sm leading-relaxed">
+        {negocio.descripcionCorta}
+      </p>
+    </div>
+
+    <div>
+      <h2 class="font-display text-lg font-bold text-crema">Dónde estamos</h2>
+      <address class="mt-3 space-y-1 text-sm not-italic">
+        <p>{negocio.direccion.calle}</p>
+        <p>
+          {negocio.direccion.localidad} ({negocio.direccion.codigoPostal}), {
+            negocio.direccion.provincia
+          }
+        </p>
+        <p class="pt-2">
+          <a
+            href={`tel:${negocio.telefono.link}`}
+            class="inline-flex min-h-11 items-center rounded font-semibold text-mostaza hover:underline"
+            >{negocio.telefono.visible}</a
+          >
+        </p>
+      </address>
+      <a
+        href={urlComoLlegar()}
+        target="_blank"
+        rel="noopener"
+        class="inline-flex min-h-11 items-center text-sm font-medium underline underline-offset-4 hover:text-mostaza"
+        >Cómo llegar</a
+      >
+    </div>
+
+    <div>
+      <h2 class="font-display text-lg font-bold text-crema">Horarios</h2>
+      <ul class="mt-3 space-y-1 text-sm">
+        {
+          negocio.horarios.map((h) => (
+            <li class="flex justify-between gap-4">
+              <span>{h.nombre}</span>
+              <span class="text-right text-crema/70">
+                {h.turnos.length === 0
+                  ? 'Cerrado'
+                  : h.turnos.map((t) => `${t.desde}–${t.hasta}`).join(' · ')}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="font-display text-lg font-bold text-crema">Pedidos</h2>
+      <ul class="mt-3 space-y-3 text-sm">
+        <li>
+          <a
+            href={linkWhatsApp(`¡Hola ${negocio.nombre}! Quería hacer un pedido.`)}
+            target="_blank"
+            rel="noopener"
+            class="inline-flex min-h-11 items-center font-semibold text-mostaza hover:underline"
+            >Pedir por WhatsApp</a
+          >
+        </li>
+        <li>
+          <a
+            href={negocio.redes.instagram.url}
+            target="_blank"
+            rel="noopener me"
+            class="inline-flex min-h-11 items-center hover:text-mostaza hover:underline"
+            >Instagram {negocio.redes.instagram.usuario}</a
+          >
+        </li>
+        <li>
+          <a
+            href={`${base}#carta`}
+            class="inline-flex min-h-11 items-center hover:text-mostaza hover:underline"
+            >Ver la carta</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div
+      class="contenedor flex flex-col gap-2 py-5 text-xs text-crema/60 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p>© {anio} {negocio.nombre}. {negocio.direccion.completa}.</p>
+      <p>
+        Sitio hecho por
+        <a
+          href="#"
+          class="inline-flex min-h-11 items-center underline underline-offset-2 hover:text-mostaza"
+          data-todo="Reemplazar por el nombre y el link del desarrollador"
+          >TODO: tu nombre acá</a
+        >
+      </p>
+    </div>
+  </div>
+</footer>

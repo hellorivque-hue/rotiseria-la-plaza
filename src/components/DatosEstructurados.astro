@@ -1,0 +1,99 @@
+---
+/**
+ * JSON-LD de tipo Restaurant.
+ *
+ * Es lo que le permite a Google mostrar el horario, el telefono y la direccion
+ * directo en el resultado de busqueda. Todo sale de negocio.json y carta.json,
+ * asi que no puede quedar desincronizado con lo que se ve en pantalla.
+ *
+ * Dos cosas que NO se declaran a proposito:
+ *
+ * 1. `geo`: las coordenadas que tenemos son del centro de Punta Alta, no de la
+ *    puerta del local (ver negocio.json, `aproximadas: true`). Declarar una
+ *    ubicacion falsa es peor que no declarar ninguna.
+ *
+ * 2. `aggregateRating`: el 4,3 de Google es real, pero las guias de datos
+ *    estructurados de Google no aceptan que un negocio publique en su propio
+ *    sitio el puntaje que le puso otra plataforma. Puede costar una penalizacion
+ *    manual. El puntaje se muestra en el hero, con la fuente a la vista, que es
+ *    la forma correcta.
+ */
+import { negocio, carta } from '../lib/datos';
+import { horariosSchema } from '../lib/horarios';
+
+const sitio = Astro.site ?? new URL('https://rotiserialaplaza.com.ar');
+const url = new URL('/', sitio).href;
+const imagen = new URL('/img/og.jpg', sitio).href;
+
+/** La carta, en formato schema.org. Los precios sin cargar no se declaran. */
+const menu = {
+  '@type': 'Menu',
+  name: `Carta de ${negocio.nombre}`,
+  inLanguage: 'es-AR',
+  hasMenuSection: carta.map((categoria) => ({
+    '@type': 'MenuSection',
+    name: categoria.nombre,
+    ...(categoria.descripcion ? { description: categoria.descripcion } : {}),
+    hasMenuItem: categoria.items
+      .filter((item) => item.disponible)
+      .map((item) => ({
+        '@type': 'MenuItem',
+        name: item.nombre,
+        ...(item.descripcion ? { description: item.descripcion } : {}),
+        ...(item.precio !== null
+          ? {
+              offers: {
+                '@type': 'Offer',
+                price: item.precio,
+                priceCurrency: 'ARS',
+              },
+            }
+          : {}),
+      })),
+  })),
+};
+
+const datos = {
+  '@context': 'https://schema.org',
+  '@type': 'Restaurant',
+  '@id': `${url}#restaurant`,
+  name: negocio.nombre,
+  slogan: negocio.lema,
+  description: negocio.descripcionLarga,
+  url,
+  image: imagen,
+  telephone: negocio.telefono.link,
+  priceRange: negocio.rangoPrecios,
+  currenciesAccepted: 'ARS',
+  servesCuisine: ['Comida casera', 'Rotisería', 'Pastas', 'Pizza', 'Empanadas'],
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: negocio.direccion.calle,
+    addressLocality: negocio.direccion.localidad,
+    addressRegion: negocio.direccion.provincia,
+    postalCode: negocio.direccion.codigoPostal,
+    addressCountry: negocio.direccion.pais,
+  },
+  areaServed: {
+    '@type': 'City',
+    name: negocio.direccion.localidad,
+  },
+  openingHoursSpecification: horariosSchema(negocio.horarios),
+  hasMenu: menu,
+  sameAs: [negocio.redes.instagram.url],
+  potentialAction: {
+    '@type': 'OrderAction',
+    target: `https://wa.me/${negocio.telefono.whatsapp}`,
+    deliveryMethod: [
+      'https://schema.org/OnSitePickup',
+      'https://schema.org/ParcelService',
+    ],
+  },
+};
+---
+
+<script
+  type="application/ld+json"
+  is:inline
+  set:html={JSON.stringify(datos)}
+/>

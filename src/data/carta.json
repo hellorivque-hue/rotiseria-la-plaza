@@ -1,0 +1,790 @@
+[
+  {
+    "id": "menu-diario",
+    "nombre": "Menú diario",
+    "descripcion": "Cambia todos los días. Mirá el de hoy más arriba.",
+    "items": [
+      {
+        "id": "menu-diario-1",
+        "nombre": "Menú del día",
+        "descripcion": "Plato principal con guarnición. Cambia todos los días.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": true,
+        "unidad": null
+      }
+    ]
+  },
+  {
+    "id": "platos-calientes",
+    "nombre": "Platos calientes",
+    "descripcion": "Minutas hechas al momento.",
+    "items": [
+      {
+        "id": "calientes-bife-lomo",
+        "nombre": "Bife de lomo",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "calientes-bife-costilla",
+        "nombre": "Bife de costilla",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "calientes-costillas-cerdo",
+        "nombre": "Costillas de cerdo",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "2 unidades"
+      },
+      {
+        "id": "calientes-costillas-riojana",
+        "nombre": "Costillas de cerdo a la riojana",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": true,
+        "unidad": null
+      },
+      {
+        "id": "calientes-merluza",
+        "nombre": "Filet de merluza",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "2 unidades"
+      },
+      {
+        "id": "calientes-medallon-lomo",
+        "nombre": "Medallón de lomo",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "calientes-medallon-papas",
+        "nombre": "Medallón de lomo con papas",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "calientes-medallon-caballo",
+        "nombre": "Medallón de lomo a caballo con papas",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "calientes-lomo-pimienta",
+        "nombre": "Lomo a la pimienta",
+        "descripcion": "Con guarnición.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "calientes-lomo-champinon",
+        "nombre": "Lomo al champiñón",
+        "descripcion": "Con guarnición.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "calientes-lomo-crema",
+        "nombre": "Lomo a la crema",
+        "descripcion": "Con guarnición.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      }
+    ]
+  },
+  {
+    "id": "milanesas",
+    "nombre": "Milanesas",
+    "descripcion": "De ternera y de soja.",
+    "items": [
+      {
+        "id": "mila-ternera",
+        "nombre": "Milanesa de ternera",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": true,
+        "unidad": null
+      },
+      {
+        "id": "mila-ternera-napolitana",
+        "nombre": "Milanesa de ternera napolitana",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": true,
+        "unidad": null
+      },
+      {
+        "id": "mila-ternera-napo-caballo",
+        "nombre": "Milanesa de ternera napolitana a caballo",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "mila-ternera-suiza",
+        "nombre": "Milanesa de ternera suiza",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "mila-ternera-fugazzetta",
+        "nombre": "Milanesa de ternera a la fugazzetta",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "mila-ternera-roquefort",
+        "nombre": "Milanesa de ternera al roquefort",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "mila-ternera-caballo",
+        "nombre": "Milanesa de ternera a caballo",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "mila-soja",
+        "nombre": "Milanesa de soja",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "cada una"
+      },
+      {
+        "id": "mila-soja-suiza",
+        "nombre": "Milanesa de soja suiza",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "cada una"
+      },
+      {
+        "id": "mila-soja-napo",
+        "nombre": "Milanesa de soja napolitana",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "cada una"
+      }
+    ]
+  },
+  {
+    "id": "platos-frios",
+    "nombre": "Platos fríos",
+    "descripcion": "Por pedido.",
+    "items": [
+      {
+        "id": "frios-arrollado-pollo",
+        "nombre": "Arrollado de pollo",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "frios-lengua",
+        "nombre": "Lengua a la vinagreta",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "frios-matambre",
+        "nombre": "Matambre relleno",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": true,
+        "unidad": null
+      },
+      {
+        "id": "frios-vitel",
+        "nombre": "Vitel thonné",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "frios-fiambre-aleman",
+        "nombre": "Fiambre alemán",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "entero o medio"
+      },
+      {
+        "id": "frios-pionono",
+        "nombre": "Pionono primavera",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "entero o medio"
+      }
+    ]
+  },
+  {
+    "id": "pastas",
+    "nombre": "Pastas caseras",
+    "descripcion": "Con salsa y queso.",
+    "items": [
+      {
+        "id": "pastas-tallarines",
+        "nombre": "Tallarines al huevo",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "porción"
+      },
+      {
+        "id": "pastas-noquis",
+        "nombre": "Ñoquis",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "porción"
+      },
+      {
+        "id": "pastas-ravioles",
+        "nombre": "Ravioles de ricota o verdura",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": true,
+        "unidad": "porción"
+      },
+      {
+        "id": "pastas-sorrentinos-calabaza",
+        "nombre": "Sorrentinos de calabaza y queso",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": true,
+        "unidad": "porción"
+      },
+      {
+        "id": "pastas-sorrentinos-jamon",
+        "nombre": "Sorrentinos de jamón y mozzarella",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "porción"
+      },
+      {
+        "id": "pastas-canelones",
+        "nombre": "Canelones de verdura",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "porción"
+      }
+    ]
+  },
+  {
+    "id": "tartas",
+    "nombre": "Tartas",
+    "descripcion": "Enteras, media o por porción.",
+    "items": [
+      {
+        "id": "tartas-jamon-mozza",
+        "nombre": "Jamón y mozzarella",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": true,
+        "unidad": "entera, media o porción"
+      },
+      {
+        "id": "tartas-pascualina",
+        "nombre": "Pascualina",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "entera, media o porción"
+      },
+      {
+        "id": "tartas-zapallito",
+        "nombre": "Zapallito",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "entera, media o porción"
+      },
+      {
+        "id": "tartas-calabaza-mozza",
+        "nombre": "Calabaza y mozzarella",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "entera, media o porción"
+      },
+      {
+        "id": "tartas-mitad-verdura-jyq",
+        "nombre": "Mitad verdura, mitad jamón y queso",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "entera"
+      },
+      {
+        "id": "tartas-mitad-verduras",
+        "nombre": "Mitad y mitad de verduras distintas",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "entera"
+      },
+      {
+        "id": "tartas-cuarto-verdura",
+        "nombre": "Cuarto de verdura",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      }
+    ]
+  },
+  {
+    "id": "empanadas",
+    "nombre": "Empanadas al horno",
+    "descripcion": "Por unidad, media docena, docena, docena y media o dos docenas.",
+    "items": [
+      {
+        "id": "empanadas-carne",
+        "nombre": "Carne",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": true,
+        "unidad": "por unidad o por docena"
+      },
+      {
+        "id": "empanadas-jamon-queso",
+        "nombre": "Jamón y queso",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "por unidad o por docena"
+      },
+      {
+        "id": "empanadas-queso-cebolla",
+        "nombre": "Queso y cebolla",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "por unidad o por docena"
+      },
+      {
+        "id": "empanadas-pollo",
+        "nombre": "Pollo",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "por unidad o por docena"
+      }
+    ]
+  },
+  {
+    "id": "pizzas",
+    "nombre": "Pizzas",
+    "descripcion": null,
+    "items": [
+      {
+        "id": "pizza-mozzarella",
+        "nombre": "Mozzarella",
+        "descripcion": "Mozzarella, orégano y salsa.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": true,
+        "unidad": null
+      },
+      {
+        "id": "pizza-jamon-mozza",
+        "nombre": "Jamón y mozzarella",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "pizza-fugazzetta",
+        "nombre": "Fugazzetta",
+        "descripcion": "Mozzarella y cebolla.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": true,
+        "unidad": null
+      },
+      {
+        "id": "pizza-jamon-morron",
+        "nombre": "Jamón, mozzarella y morrón",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "pizza-jamon-aceitunas",
+        "nombre": "Jamón, mozzarella y aceitunas",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "pizza-especial",
+        "nombre": "Especial",
+        "descripcion": "Jamón, mozzarella, morrón y aceitunas.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "pizza-palmitos",
+        "nombre": "Palmitos",
+        "descripcion": "Jamón, mozzarella, palmitos, aceitunas y salsa golf.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "pizza-napolitana",
+        "nombre": "Napolitana",
+        "descripcion": "Mozzarella y rodajas de tomate.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "pizza-napolitana-jamon",
+        "nombre": "Napolitana con jamón",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "pizza-roquefort",
+        "nombre": "Roquefort",
+        "descripcion": "Mozzarella, roquefort y huevo duro.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "pizza-omelette",
+        "nombre": "Omelette",
+        "descripcion": "Mozzarella, jamón y omelette.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "pizza-anchoas",
+        "nombre": "Anchoas",
+        "descripcion": "Mozzarella y anchoas.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "pizza-huevo-frito",
+        "nombre": "Huevo frito",
+        "descripcion": "Jamón, mozzarella y 4 huevos fritos.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "pizza-anana",
+        "nombre": "Ananá",
+        "descripcion": "Jamón, mozzarella, ananá, morrón y aceitunas.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "pizza-champinon",
+        "nombre": "Champiñón",
+        "descripcion": "Jamón, mozzarella y champiñones.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "pizza-calabresa",
+        "nombre": "Calabresa",
+        "descripcion": "Mozzarella y cantimpalo.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "pizza-4-quesos",
+        "nombre": "4 quesos",
+        "descripcion": "Mozzarella, sardo, barra y roquefort.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "pizza-panceta-huevo",
+        "nombre": "Panceta y huevo frito",
+        "descripcion": "Mozzarella, panceta y 4 huevos.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      }
+    ]
+  },
+  {
+    "id": "ensaladas",
+    "nombre": "Ensaladas",
+    "descripcion": null,
+    "items": [
+      {
+        "id": "ensalada-mixta",
+        "nombre": "Mixta, zanahoria y huevo",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "ensalada-zanahoria-remolacha",
+        "nombre": "Zanahoria, remolacha y huevo",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "ensalada-william",
+        "nombre": "William",
+        "descripcion": "Zanahoria rallada, ananá y pasas.",
+        "precio": null,
+        "disponible": true,
+        "recomendado": true,
+        "unidad": null
+      },
+      {
+        "id": "ensalada-rusa",
+        "nombre": "Ensalada rusa",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": "por kilo"
+      }
+    ]
+  },
+  {
+    "id": "guarniciones",
+    "nombre": "Guarniciones",
+    "descripcion": "Por porción.",
+    "items": [
+      {
+        "id": "guar-tortilla-papa-cebolla",
+        "nombre": "Tortilla de papa y cebolla",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "guar-tortilla-papas",
+        "nombre": "Tortilla de papas",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "guar-tortilla-espanola",
+        "nombre": "Tortilla de papas a la española",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "guar-tortilla-verdura",
+        "nombre": "Tortilla de verdura",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "guar-papas-horno",
+        "nombre": "Papas al horno",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": true,
+        "unidad": null
+      },
+      {
+        "id": "guar-papas-provenzal",
+        "nombre": "Papas a la provenzal",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "guar-papas-crema",
+        "nombre": "Papas a la crema",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "guar-pure-papas",
+        "nombre": "Puré de papas",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "guar-pure-calabaza",
+        "nombre": "Puré de calabaza",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "guar-mix-verduras",
+        "nombre": "Mix de verduras",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      }
+    ]
+  },
+  {
+    "id": "postres",
+    "nombre": "Postres",
+    "descripcion": null,
+    "items": [
+      {
+        "id": "postres-1",
+        "nombre": "Postres",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": false,
+        "unidad": null
+      },
+      {
+        "id": "postres-2",
+        "nombre": "Panqueques",
+        "descripcion": null,
+        "precio": null,
+        "disponible": true,
+        "recomendado": true,
+        "unidad": null
+      }
+    ]
+  }
+]

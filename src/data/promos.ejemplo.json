@@ -1,0 +1,29 @@
+[
+  {
+    "id": "combo-familiar",
+    "titulo": "TODO: Combo familiar",
+    "descripcion": "TODO: qué incluye el combo (ej.: 1 pollo al horno + guarnición + 6 empanadas).",
+    "etiqueta": "Para compartir",
+    "precio": null,
+    "condiciones": "TODO: confirmar días y horarios en que aplica.",
+    "destacada": true
+  },
+  {
+    "id": "retiro-en-local",
+    "titulo": "TODO: Descuento por retirar en el local",
+    "descripcion": "TODO: porcentaje o monto de descuento por pasar a buscar el pedido por Brown 406.",
+    "etiqueta": "Retiro",
+    "precio": null,
+    "condiciones": "TODO: confirmar si aplica a todo el menú o solo al menú del día.",
+    "destacada": false
+  },
+  {
+    "id": "pedido-anticipado",
+    "titulo": "TODO: Pedí antes de las 12 y te lo tenemos listo",
+    "descripcion": "TODO: confirmar el horario límite real para encargar el menú del mediodía.",
+    "etiqueta": "Anticipado",
+    "precio": null,
+    "condiciones": null,
+    "destacada": false
+  }
+]

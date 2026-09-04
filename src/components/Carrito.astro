@@ -1,0 +1,595 @@
+---
+/**
+ * Carrito y flujo de WhatsApp.
+ *
+ * Todo lo de esta seccion lleva la clase `solo-js`: si el visitante no tiene
+ * JavaScript no ve un boton muerto, ve los links directos a WhatsApp que estan
+ * al lado de cada plato.
+ *
+ * El panel es un <dialog> nativo abierto con showModal(): el navegador ya se
+ * ocupa del foco atrapado, del Escape y de dejar inerte el fondo. Escribir eso
+ * a mano en JavaScript siempre sale peor.
+ *
+ * Los datos del local los lee el script del navegador directo de negocio.json,
+ * asi que aca arriba no hace falta importar nada.
+ */
+---
+
+<!-- Lo que se agrega al pedido se anuncia aca para los lectores de pantalla -->
+<p class="sr-only" role="status" aria-live="polite" data-anuncio-pedido></p>
+
+<!-- Boton flotante: barra ancha en mobile, pastilla en escritorio -->
+<div
+  class="solo-js fixed inset-x-3 bottom-3 z-50 hidden sm:inset-x-auto sm:right-6 sm:bottom-6"
+  data-fab-contenedor
+>
+  <button
+    type="button"
+    class="boton boton-secundario w-full justify-between gap-4 !px-5 shadow-[var(--shadow-flotante)] sm:w-auto sm:justify-center"
+    data-abrir-pedido
+  >
+    <span class="flex items-center gap-2">
+      <svg
+        class="size-5 shrink-0"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M6 6h15l-1.5 9h-12z"></path>
+        <path d="M6 6 5 3H2"></path>
+        <circle cx="9" cy="20" r="1.4"></circle>
+        <circle cx="18" cy="20" r="1.4"></circle>
+      </svg>
+      <span>Ver mi pedido</span>
+      <span
+        class="inline-flex min-w-6 items-center justify-center rounded-full bg-mostaza px-2 py-0.5 text-sm font-bold text-tinta"
+        data-fab-cantidad>0</span
+      >
+    </span>
+    <span class="font-display font-bold" data-fab-total></span>
+  </button>
+</div>
+
+<dialog
+  class="panel-pedido solo-js"
+  data-panel-pedido
+  aria-labelledby="titulo-pedido"
+>
+  <form class="flex h-full flex-col" data-form-pedido>
+    <header
+      class="flex items-center justify-between gap-3 border-b border-crema-borde bg-white px-5 py-4"
+    >
+      <div>
+        <h2 id="titulo-pedido" class="font-display text-xl font-bold">Tu pedido</h2>
+        <p class="text-sm text-tinta-suave" data-resumen-items></p>
+      </div>
+      <button
+        type="button"
+        class="boton boton-fantasma !min-h-11 !px-3 !py-2"
+        data-cerrar-pedido
+        aria-label="Cerrar el pedido"
+      >
+        <svg
+          class="size-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M6 6l12 12M18 6L6 18"></path>
+        </svg>
+      </button>
+    </header>
+
+    <div class="grow overflow-y-auto px-5 py-4">
+      <!-- Vacio -->
+      <div class="hidden py-10 text-center" data-pedido-vacio>
+        <p class="font-display text-xl font-bold">Todavía no cargaste nada</p>
+        <p class="mx-auto mt-2 max-w-xs text-tinta-suave">
+          Agregá el menú del día o algo de la carta y armá el pedido acá.
+        </p>
+        <button type="button" class="boton boton-fantasma mt-6" data-cerrar-pedido>
+          Ver el menú
+        </button>
+      </div>
+
+      <!-- Con items -->
+      <div class="hidden" data-pedido-lleno>
+        <ul class="flex flex-col gap-3" data-lista-pedido></ul>
+
+        <div class="mt-6 flex flex-col gap-4">
+          <fieldset>
+            <legend class="font-display text-base font-bold">¿Cómo lo recibís?</legend>
+            <div class="mt-2 grid grid-cols-2 gap-2" role="radiogroup">
+              <label
+                class="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border border-crema-borde bg-white px-3 py-2 text-center font-medium has-checked:border-ladrillo has-checked:bg-ladrillo has-checked:text-white"
+              >
+                <input
+                  type="radio"
+                  name="modalidad"
+                  value="delivery"
+                  class="sr-only"
+                  data-modalidad
+                  checked
+                />
+                Envío a domicilio
+              </label>
+              <label
+                class="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border border-crema-borde bg-white px-3 py-2 text-center font-medium has-checked:border-ladrillo has-checked:bg-ladrillo has-checked:text-white"
+              >
+                <input
+                  type="radio"
+                  name="modalidad"
+                  value="retiro"
+                  class="sr-only"
+                  data-modalidad
+                />
+                Retiro en el local
+              </label>
+            </div>
+            <p class="mt-2 text-sm text-tinta-suave" data-aviso-modalidad></p>
+          </fieldset>
+
+          <div>
+            <label for="pedido-nombre" class="block font-medium">
+              Tu nombre <span class="text-ladrillo" aria-hidden="true">*</span>
+            </label>
+            <input
+              id="pedido-nombre"
+              type="text"
+              autocomplete="name"
+              required
+              maxlength="60"
+              class="mt-1 min-h-12 w-full rounded-xl border border-crema-borde bg-white px-4 py-2 aria-[invalid=true]:border-ladrillo aria-[invalid=true]:bg-ladrillo/5"
+              data-campo-nombre
+              aria-describedby="error-nombre"
+            />
+            <p class="mt-1 hidden text-sm font-medium text-ladrillo" id="error-nombre">
+              Poné tu nombre así sabemos de quién es el pedido.
+            </p>
+          </div>
+
+          <div data-bloque-direccion>
+            <label for="pedido-direccion" class="block font-medium">
+              Dirección de entrega <span class="text-ladrillo" aria-hidden="true">*</span>
+            </label>
+            <input
+              id="pedido-direccion"
+              type="text"
+              autocomplete="street-address"
+              maxlength="120"
+              class="mt-1 min-h-12 w-full rounded-xl border border-crema-borde bg-white px-4 py-2 aria-[invalid=true]:border-ladrillo aria-[invalid=true]:bg-ladrillo/5"
+              data-campo-direccion
+              aria-describedby="error-direccion ayuda-direccion"
+            />
+            <p class="mt-1 text-sm text-tinta-suave" id="ayuda-direccion">
+              Calle, número y entre qué calles. El delivery llega hasta cierto radio:
+              te confirmamos por WhatsApp.
+            </p>
+            <p class="mt-1 hidden text-sm font-medium text-ladrillo" id="error-direccion">
+              Necesitamos la dirección para llevarte el pedido.
+            </p>
+          </div>
+
+          <div>
+            <label for="pedido-notas" class="block font-medium">
+              Aclaraciones <span class="font-normal text-tinta-suave">(opcional)</span>
+            </label>
+            <textarea
+              id="pedido-notas"
+              rows="2"
+              maxlength="300"
+              class="mt-1 w-full rounded-xl border border-crema-borde bg-white px-4 py-2"
+              data-campo-notas
+              placeholder="Timbre que no anda, horario, algo que no lleve..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer
+      class="hidden border-t border-crema-borde bg-white px-5 py-4"
+      data-pie-pedido
+    >
+      <div
+        class="mb-3 hidden rounded-xl border border-mostaza bg-mostaza/15 px-4 py-3 text-sm"
+        data-aviso-cerrado
+        role="status"
+      >
+      </div>
+
+      <div class="flex items-baseline justify-between gap-3">
+        <span class="font-medium">Total</span>
+        <span class="font-display text-xl font-bold text-ladrillo" data-total-pedido
+        ></span>
+      </div>
+
+      <button type="button" class="boton boton-primario mt-3 w-full" data-enviar-pedido>
+        <svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path
+            d="M12.04 2C6.6 2 2.17 6.43 2.17 11.87c0 1.74.46 3.44 1.32 4.94L2 22l5.35-1.4a9.83 9.83 0 0 0 4.69 1.19h.01c5.44 0 9.87-4.43 9.87-9.87S17.48 2 12.04 2Zm5.43 12.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.65-2.05-.17-.3-.02-.46.13-.6.14-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.38-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35Z"
+          ></path>
+        </svg>
+        <span data-texto-enviar>Enviar el pedido por WhatsApp</span>
+      </button>
+
+      <div class="mt-2 flex items-center justify-between gap-3">
+        <p class="text-xs text-tinta-suave">
+          Precios sujetos a cambio: confirmalos al hacer el pedido.
+        </p>
+        <button
+          type="button"
+          class="shrink-0 rounded px-1 py-2 text-sm font-medium text-tinta-suave underline underline-offset-4 hover:text-ladrillo"
+          data-vaciar-pedido
+        >
+          Vaciar
+        </button>
+      </div>
+    </footer>
+  </form>
+</dialog>
+
+<!-- Molde de cada linea del pedido: se clona, nunca se arma con innerHTML -->
+<template data-molde-item>
+  <li class="tarjeta flex flex-col gap-3 p-4">
+    <div class="flex items-start justify-between gap-3">
+      <p class="font-semibold" data-nombre></p>
+      <p class="font-display shrink-0 font-bold text-ladrillo" data-subtotal></p>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center rounded-full border border-crema-borde bg-white">
+        <button
+          type="button"
+          class="flex size-11 items-center justify-center rounded-full text-xl font-bold text-ladrillo"
+          data-menos
+        >
+          <span aria-hidden="true">−</span>
+        </button>
+        <input
+          type="number"
+          min="1"
+          max="99"
+          step="1"
+          inputmode="numeric"
+          class="cantidad-pedido w-10 border-0 bg-transparent text-center font-semibold focus:outline-none"
+          data-cantidad
+        />
+        <button
+          type="button"
+          class="flex size-11 items-center justify-center rounded-full text-xl font-bold text-ladrillo"
+          data-mas
+        >
+          <span aria-hidden="true">+</span>
+        </button>
+      </div>
+
+      <button
+        type="button"
+        class="min-h-11 rounded px-2 text-sm font-medium text-tinta-suave underline underline-offset-4 hover:text-ladrillo"
+        data-quitar
+      >
+        Quitar
+      </button>
+    </div>
+
+    <details class="text-sm" data-detalle-aclaracion>
+      <summary
+        class="inline-flex min-h-11 cursor-pointer items-center font-medium text-ladrillo"
+        >Agregar una aclaración</summary
+      >
+      <textarea
+        rows="2"
+        maxlength="200"
+        class="mt-2 w-full rounded-xl border border-crema-borde bg-white px-3 py-2"
+        data-aclaracion
+        placeholder="Sin sal, bien cocido, cortado al medio..."></textarea>
+    </details>
+  </li>
+</template>
+
+<script>
+  import * as carrito from '../scripts/carrito';
+  import negocio from '../data/negocio.json';
+  import { estadoApertura } from '../lib/horarios';
+  import { precioPlano } from '../lib/formato';
+  import type { HorarioDia, ItemPedido } from '../types';
+
+  const panel = document.querySelector<HTMLDialogElement>('[data-panel-pedido]');
+  const molde = document.querySelector<HTMLTemplateElement>('[data-molde-item]');
+  const lista = document.querySelector<HTMLUListElement>('[data-lista-pedido]');
+  const fab = document.querySelector<HTMLElement>('[data-fab-contenedor]');
+
+  if (panel && molde && lista && fab) {
+    const q = <T extends HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
+
+    const fabCantidad = q('[data-fab-cantidad]');
+    const fabTotal = q('[data-fab-total]');
+    const resumenItems = q('[data-resumen-items]');
+    const vacio = q('[data-pedido-vacio]');
+    const lleno = q('[data-pedido-lleno]');
+    const pie = q('[data-pie-pedido]');
+    const totalPedido = q('[data-total-pedido]');
+    const avisoCerrado = q('[data-aviso-cerrado]');
+    const avisoModalidad = q('[data-aviso-modalidad]');
+    const textoEnviar = q('[data-texto-enviar]');
+    const campoNombre = q<HTMLInputElement>('[data-campo-nombre]');
+    const campoDireccion = q<HTMLInputElement>('[data-campo-direccion]');
+    const campoNotas = q<HTMLTextAreaElement>('[data-campo-notas]');
+    const bloqueDireccion = q('[data-bloque-direccion]');
+    const errorNombre = q('#error-nombre');
+    const errorDireccion = q('#error-direccion');
+
+    /** Quien tenia el foco antes de abrir, para devolverselo al cerrar. */
+    let ultimoFoco: HTMLElement | null = null;
+
+    const estadoLocal = () =>
+      estadoApertura(negocio.horarios as HorarioDia[], negocio.zonaHoraria);
+
+    /* ------------------------------------------------------------------ */
+    /* Pintar                                                             */
+    /* ------------------------------------------------------------------ */
+
+    function pintarItem(item: ItemPedido): HTMLLIElement {
+      const nodo = molde!.content.firstElementChild!.cloneNode(true) as HTMLLIElement;
+      const buscar = <T extends HTMLElement>(sel: string) => nodo.querySelector<T>(sel)!;
+
+      buscar('[data-nombre]').textContent = item.nombre;
+      buscar('[data-subtotal]').textContent =
+        item.precio === null ? 'A confirmar' : precioPlano(item.precio * item.cantidad);
+
+      const cantidad = buscar<HTMLInputElement>('[data-cantidad]');
+      cantidad.value = String(item.cantidad);
+      cantidad.setAttribute('aria-label', `Cantidad de ${item.nombre}`);
+
+      const menos = buscar<HTMLButtonElement>('[data-menos]');
+      const mas = buscar<HTMLButtonElement>('[data-mas]');
+      const quitar = buscar<HTMLButtonElement>('[data-quitar]');
+      menos.setAttribute('aria-label', `Quitar una unidad de ${item.nombre}`);
+      mas.setAttribute('aria-label', `Agregar una unidad de ${item.nombre}`);
+      quitar.setAttribute('aria-label', `Sacar ${item.nombre} del pedido`);
+
+      menos.addEventListener('click', () => carrito.sumar(item.id, -1));
+      mas.addEventListener('click', () => carrito.sumar(item.id, 1));
+      quitar.addEventListener('click', () => carrito.quitar(item.id));
+      cantidad.addEventListener('change', () =>
+        carrito.establecerCantidad(item.id, Number(cantidad.value)),
+      );
+
+      const aclaracion = buscar<HTMLTextAreaElement>('[data-aclaracion]');
+      aclaracion.value = item.aclaracion ?? '';
+      aclaracion.setAttribute('aria-label', `Aclaración para ${item.nombre}`);
+      // Si ya tenia texto, la deja abierta para que se vea.
+      if (item.aclaracion) buscar<HTMLDetailsElement>('[data-detalle-aclaracion]').open = true;
+      aclaracion.addEventListener('input', () =>
+        carrito.ponerAclaracion(item.id, aclaracion.value),
+      );
+
+      return nodo;
+    }
+
+    function pintar() {
+      const estado = carrito.obtener();
+      const cantidad = carrito.cantidadTotal();
+      const hayItems = cantidad > 0;
+
+      // Boton flotante
+      fab!.classList.toggle('hidden', !hayItems);
+      document.documentElement.classList.toggle('con-pedido', hayItems);
+      fabCantidad.textContent = String(cantidad);
+      fabTotal.textContent = carrito.totalTexto();
+
+      // Cuerpo del panel
+      vacio.classList.toggle('hidden', hayItems);
+      lleno.classList.toggle('hidden', !hayItems);
+      pie.classList.toggle('hidden', !hayItems);
+
+      resumenItems.textContent = hayItems
+        ? `${cantidad} ${cantidad === 1 ? 'ítem' : 'ítems'}`
+        : 'Vacío por ahora';
+
+      // La lista se rearma entera. Se puede porque escribir una aclaracion NO
+      // repinta (ver carrito.ts): si repintara, se perderia el cursor.
+      lista!.replaceChildren(...estado.items.map(pintarItem));
+
+      totalPedido.textContent = carrito.totalTexto();
+
+      // Modalidad
+      for (const radio of document.querySelectorAll<HTMLInputElement>('[data-modalidad]')) {
+        radio.checked = radio.value === estado.modalidad;
+      }
+      const esDelivery = estado.modalidad === 'delivery';
+      bloqueDireccion.classList.toggle('hidden', !esDelivery);
+      avisoModalidad.textContent = esDelivery
+        ? 'Llegamos hasta cierto radio de Punta Alta. Te confirmamos por WhatsApp.'
+        : `Lo retirás por ${negocio.direccion.calle}, ${negocio.direccion.localidad}.`;
+
+      if (campoNombre.value !== estado.nombre) campoNombre.value = estado.nombre;
+      if (campoDireccion.value !== estado.direccion) campoDireccion.value = estado.direccion;
+      if (campoNotas.value !== estado.notas) campoNotas.value = estado.notas;
+
+      // Aviso de local cerrado
+      const local = estadoLocal();
+      avisoCerrado.classList.toggle('hidden', local.abierto);
+      textoEnviar.textContent = local.abierto
+        ? 'Enviar el pedido por WhatsApp'
+        : 'Enviar igual por WhatsApp';
+      if (!local.abierto) {
+        avisoCerrado.textContent = `${local.detalle} Podés mandar el pedido igual: te respondemos en el próximo horario de atención.`;
+      }
+    }
+
+    carrito.suscribir(pintar);
+
+    /* ------------------------------------------------------------------ */
+    /* Abrir y cerrar                                                     */
+    /* ------------------------------------------------------------------ */
+
+    function abrir() {
+      ultimoFoco = document.activeElement as HTMLElement | null;
+      panel!.showModal();
+      // El foco arranca en el titulo, no en el primer boton.
+      panel!.querySelector<HTMLElement>('#titulo-pedido')?.setAttribute('tabindex', '-1');
+      panel!.querySelector<HTMLElement>('#titulo-pedido')?.focus();
+    }
+
+    function cerrar() {
+      panel!.close();
+    }
+
+    panel.addEventListener('close', () => ultimoFoco?.focus());
+
+    for (const boton of document.querySelectorAll('[data-abrir-pedido]')) {
+      boton.addEventListener('click', abrir);
+    }
+    for (const boton of document.querySelectorAll('[data-cerrar-pedido]')) {
+      boton.addEventListener('click', cerrar);
+    }
+
+    // Clic en el fondo oscuro: cierra.
+    panel.addEventListener('click', (e) => {
+      if (e.target === panel) cerrar();
+    });
+
+    /* ------------------------------------------------------------------ */
+    /* Botones "Agregar" repartidos por la pagina                         */
+    /* ------------------------------------------------------------------ */
+
+    const anuncio = document.querySelector<HTMLElement>('[data-anuncio-pedido]');
+
+    for (const boton of document.querySelectorAll<HTMLButtonElement>('[data-agregar]')) {
+      // La etiqueta se guarda una sola vez: si se toca varias veces seguidas,
+      // no queremos que "Agregado ✓" quede pegado como texto original.
+      const etiqueta = boton.textContent;
+      let reloj: ReturnType<typeof setTimeout> | undefined;
+
+      boton.addEventListener('click', () => {
+        const precio = boton.dataset.precio;
+        const nombre = boton.dataset.itemNombre!;
+
+        carrito.agregar({
+          id: boton.dataset.id!,
+          nombre,
+          precio: precio ? Number(precio) : null,
+          origen: (boton.dataset.origen as ItemPedido['origen']) ?? 'carta',
+          aclaracion: '',
+        });
+
+        // Confirmacion corta en el mismo boton. No se deshabilita: alguien que
+        // quiere tres empanadas tiene que poder tocar tres veces seguidas.
+        boton.textContent = 'Agregado ✓';
+        clearTimeout(reloj);
+        reloj = setTimeout(() => {
+          boton.textContent = etiqueta;
+        }, 1200);
+
+        if (anuncio) {
+          const n = carrito.cantidadTotal();
+          // "Agregamos X" y no "X agregado": los nombres de los platos tienen
+          // genero distinto (la milanesa, el pollo) y asi no hay que adivinarlo.
+          anuncio.textContent = `Agregamos ${nombre}. Tu pedido tiene ${n} ${
+            n === 1 ? 'ítem' : 'ítems'
+          }.`;
+        }
+      });
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Campos del formulario                                              */
+    /* ------------------------------------------------------------------ */
+
+    campoNombre.addEventListener('input', () => {
+      carrito.actualizarCampos({ nombre: campoNombre.value });
+      limpiarError(campoNombre, errorNombre);
+    });
+    campoDireccion.addEventListener('input', () => {
+      carrito.actualizarCampos({ direccion: campoDireccion.value });
+      limpiarError(campoDireccion, errorDireccion);
+    });
+    campoNotas.addEventListener('input', () =>
+      carrito.actualizarCampos({ notas: campoNotas.value }),
+    );
+
+    // Enter dentro del panel no tiene que enviar nada ni cerrarlo.
+    q<HTMLFormElement>('[data-form-pedido]').addEventListener('submit', (e) =>
+      e.preventDefault(),
+    );
+
+    for (const radio of document.querySelectorAll<HTMLInputElement>('[data-modalidad]')) {
+      radio.addEventListener('change', () => {
+        if (radio.checked) {
+          carrito.establecerModalidad(radio.value === 'retiro' ? 'retiro' : 'delivery');
+          limpiarError(campoDireccion, errorDireccion);
+        }
+      });
+    }
+
+    q<HTMLButtonElement>('[data-vaciar-pedido]').addEventListener('click', () => {
+      carrito.vaciar();
+    });
+
+    function marcarError(campo: HTMLInputElement, mensaje: HTMLElement) {
+      campo.setAttribute('aria-invalid', 'true');
+      mensaje.classList.remove('hidden');
+    }
+
+    function limpiarError(campo: HTMLInputElement, mensaje: HTMLElement) {
+      campo.removeAttribute('aria-invalid');
+      mensaje.classList.add('hidden');
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Enviar                                                             */
+    /* ------------------------------------------------------------------ */
+
+    q<HTMLButtonElement>('[data-enviar-pedido]').addEventListener('click', () => {
+      const estado = carrito.obtener();
+      if (estado.items.length === 0) return;
+
+      let primerError: HTMLInputElement | null = null;
+
+      if (!estado.nombre.trim()) {
+        marcarError(campoNombre, errorNombre);
+        primerError = campoNombre;
+      } else {
+        limpiarError(campoNombre, errorNombre);
+      }
+
+      if (estado.modalidad === 'delivery' && !estado.direccion.trim()) {
+        marcarError(campoDireccion, errorDireccion);
+        primerError = primerError ?? campoDireccion;
+      } else {
+        limpiarError(campoDireccion, errorDireccion);
+      }
+
+      if (primerError) {
+        primerError.focus();
+        return;
+      }
+
+      const local = estadoLocal();
+      const url = carrito.linkPedido(negocio.telefono.whatsapp, {
+        nombre: negocio.nombre,
+        abierto: local.abierto,
+        // "Cerrado · abre hoy 11:00" -> "abre hoy 11:00"
+        proximoHorario: local.texto.replace(/^Cerrado\s*·\s*/, ''),
+      });
+
+      const pestana = window.open(url, '_blank', 'noopener');
+
+      if (pestana) {
+        // El pedido queda guardado por si tienen que reenviarlo.
+        window.location.href = '/gracias';
+      } else {
+        // Si el navegador bloqueo la pestana nueva, se abre en la misma.
+        window.location.href = url;
+      }
+    });
+  }
+</script>
