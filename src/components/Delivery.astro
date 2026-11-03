@@ -1,56 +1,50 @@
 ---
 /**
- * Delivery y horarios.
+ * Delivery y horarios. Franja oscura y densa: datos, no adornos.
  *
  * Los horarios salen de negocio.json, no estan escritos a mano: si cambian,
  * se cambian en un solo lugar y se actualizan aca, en el pie y en el JSON-LD.
+ * La fila de hoy se marca con la variante `hoy:` (ver global.css).
  */
 import EstadoApertura from './EstadoApertura.astro';
+import IconoWhatsApp from './IconoWhatsApp.astro';
 import { negocio, linkWhatsApp } from '../lib/datos';
 
 const consultaZona = `¡Hola ${negocio.nombre}! ¿Llegan con el delivery a mi barrio? Mi dirección es: `;
 const hayZonas = negocio.delivery.zonas.length > 0;
 ---
 
-<section id="delivery" class="scroll-mt-20 bg-crema-hueso py-12 sm:py-16">
-  <div class="contenedor grid gap-8 lg:grid-cols-2 lg:gap-12">
-    <div>
-      <h2 class="titulo-seccion">Delivery y horarios</h2>
-
-      <p class="mt-4 text-lg text-tinta-suave">
-        {negocio.delivery.descripcion}
-      </p>
+<section id="delivery" class="sup-tinta py-seccion">
+  <div class="caja grid gap-x-8 gap-y-12 md:grid-cols-12 lg:gap-x-10">
+    <div class="md:col-span-6">
+      <h2 class="cartel text-titulo-1">Delivery y horarios</h2>
+      <p class="mt-5 max-w-xl text-lead text-papel">{negocio.delivery.descripcion}</p>
 
       {
         hayZonas && (
-          <div class="mt-5">
-            <h3 class="font-display text-lg font-bold">Zonas confirmadas</h3>
-            <ul class="mt-2 flex flex-wrap gap-2">
-              {negocio.delivery.zonas.map((zona) => (
-                <li class="rounded-full border border-crema-borde bg-white px-3 py-1.5 text-sm">
-                  {zona}
-                </li>
-              ))}
-            </ul>
+          <div class="mt-6">
+            <h3 class="rotulo text-papel">Zonas confirmadas</h3>
+            <p class="mt-1">{negocio.delivery.zonas.join(' · ')}</p>
           </div>
         )
       }
 
-      <div class="tarjeta mt-6 p-5">
-        <h3 class="font-display text-lg font-bold">¿Llegamos a tu barrio?</h3>
-        <p class="mt-1 text-tinta-suave">
-          Mandanos tu dirección por WhatsApp y te confirmamos al toque. También
-          podés retirar el pedido por {negocio.direccion.calle}.
+      <div class="mt-8 border-t-2 border-papel/40 pt-6">
+        <h3 class="subtitulo">¿Llegamos a tu barrio?</h3>
+        <p class="mt-2 max-w-xl text-papel">
+          Mandanos tu dirección por WhatsApp y te confirmamos al toque. También podés
+          retirar el pedido por {negocio.direccion.calle}.
         </p>
         <a
           href={linkWhatsApp(consultaZona)}
           target="_blank"
           rel="noopener"
-          class="boton boton-primario mt-4 w-full sm:w-auto"
+          class="btn btn-crema mt-5"
         >
+          <IconoWhatsApp />
           Consultar mi zona
         </a>
-        <p class="mt-3 text-sm text-tinta-suave">
+        <p class="mt-3 text-chico text-papel">
           {
             negocio.delivery.costoEnvio
               ? `Costo de envío: ${negocio.delivery.costoEnvio}.`
@@ -60,52 +54,44 @@ const hayZonas = negocio.delivery.zonas.length > 0;
       </div>
     </div>
 
-    <div>
-      <div class="tarjeta overflow-hidden">
-        <div
-          class="flex flex-wrap items-center justify-between gap-3 border-b border-crema-borde px-5 py-4"
-        >
-          <h3 class="font-display text-lg font-bold">Horarios de atención</h3>
-          <EstadoApertura />
-        </div>
-
-        <table class="w-full text-left">
-          <caption class="sr-only">
-            Horarios de atención de {negocio.nombre}, de lunes a domingo
-          </caption>
-          <thead class="sr-only">
-            <tr>
-              <th scope="col">Día</th>
-              <th scope="col">Horario</th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              negocio.horarios.map((dia) => (
-                <tr class="border-b border-crema-borde last:border-0">
-                  <th
-                    scope="row"
-                    class="px-5 py-3 text-left font-medium whitespace-nowrap"
-                  >
-                    {dia.nombre}
-                  </th>
-                  <td class="px-5 py-3 text-right">
-                    {dia.turnos.length === 0 ? (
-                      <span class="text-tinta-suave">Cerrado</span>
-                    ) : (
-                      <span class="tabular-nums">
-                        {dia.turnos.map((t) => `${t.desde} a ${t.hasta}`).join(' · ')}
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))
-            }
-          </tbody>
-        </table>
+    <div class="md:col-span-6 lg:col-span-5 lg:col-start-8">
+      <div class="flex flex-wrap items-baseline justify-between gap-3 border-b-[3px] border-crema pb-2">
+        <h3 class="subtitulo">Horarios</h3>
+        <EstadoApertura sobre="oscuro" />
       </div>
 
-      <p class="mt-4 text-sm text-tinta-suave">
+      <table class="w-full text-left">
+        <caption class="sr-only">
+          Horarios de atención de {negocio.nombre}, de lunes a domingo
+        </caption>
+        <thead class="sr-only">
+          <tr>
+            <th scope="col">Día</th>
+            <th scope="col">Horario</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            negocio.horarios.map((dia) => (
+              <tr class="border-b border-papel/20 hoy:bg-crema hoy:text-tinta" data-dia={dia.dia}>
+                <th scope="row" class="py-3 pr-3 pl-2 text-left font-semibold whitespace-nowrap">
+                  {dia.nombre}
+                  <span class="rotulo ml-2 hidden text-ladrillo hoy:inline">Hoy</span>
+                </th>
+                <td class="py-3 pr-2 pl-3 text-right tabular-nums">
+                  {dia.turnos.length === 0 ? (
+                    <span class="text-papel hoy:text-tinta-suave">Cerrado</span>
+                  ) : (
+                    dia.turnos.map((t) => `${t.desde}–${t.hasta}`).join(' · ')
+                  )}
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+
+      <p class="mt-4 text-chico text-papel">
         Los pedidos que entran fuera de horario los respondemos cuando abrimos.
       </p>
     </div>

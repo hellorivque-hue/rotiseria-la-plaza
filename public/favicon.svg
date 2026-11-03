@@ -1,5 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="La Plaza">
-  <rect width="64" height="64" rx="14" fill="#a21b12"/>
+  <rect width="64" height="64" rx="6" fill="#a21b12"/>
+  <rect x="5" y="5" width="54" height="54" rx="3" fill="none" stroke="#fbf4e6" stroke-width="2.5"/>
   <text x="32" y="44" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif"
-        font-size="38" font-weight="bold" fill="#fcf6ec">LP</text>
+        font-size="34" font-style="italic" font-weight="bold" fill="#fbf4e6">LP</text>
 </svg>

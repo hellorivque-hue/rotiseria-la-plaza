@@ -5,72 +5,77 @@
  * Si `promos.json` esta vacio, esta seccion no se renderiza: ni el titulo, ni
  * un espacio en blanco, ni un "no hay promociones". Vaciar el archivo (dejarlo
  * en `[]`) es la forma de apagarla.
+ *
+ * Va sobre tinta: es una franja oscura entre la carta (papel) y lo que sigue,
+ * para cortar el ritmo. La destacada ocupa el doble.
  */
 import { promos, negocio, linkWhatsApp } from '../lib/datos';
 import { precio } from '../lib/formato';
 
 const hayPromos = promos.length > 0;
-const destacadas = [...promos].sort(
+const ordenadas = [...promos].sort(
   (a, b) => Number(b.destacada ?? false) - Number(a.destacada ?? false),
 );
 ---
 
 {
   hayPromos && (
-    <section id="promos" class="scroll-mt-20 bg-ladrillo py-12 text-crema sm:py-16">
-      <div class="contenedor">
-        <header class="max-w-2xl">
-          <p class="text-sm font-bold tracking-[0.2em] text-mostaza uppercase">
-            Conviene
-          </p>
-          <h2 class="titulo-seccion mt-2 text-crema">Promos y combos</h2>
+    <section id="promos" class="sup-tinta py-seccion">
+      <div class="caja">
+        <header class="border-b-[3px] border-crema pb-3">
+          <p class="rotulo text-papel">Conviene</p>
+          <h2 class="cartel mt-2 text-titulo-1">Promos y combos</h2>
         </header>
 
-        <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {destacadas.map((promo) => (
+        <ul class="grid gap-x-10 lg:grid-cols-2">
+          {ordenadas.map((promo) => (
             <li
               class:list={[
-                'flex flex-col gap-3 rounded-2xl bg-crema p-5 text-tinta shadow-[var(--shadow-carta)]',
-                promo.destacada && 'sm:col-span-2 lg:col-span-1 ring-4 ring-mostaza',
+                'flex flex-col gap-3 border-b border-papel/25 py-6',
+                promo.destacada && 'lg:col-span-2 lg:grid lg:grid-cols-12 lg:items-end lg:gap-x-10',
               ]}
             >
-              {promo.etiqueta && (
-                <p class="inline-block self-start rounded-full bg-mostaza px-3 py-1 text-xs font-bold tracking-wide text-tinta uppercase">
-                  {promo.etiqueta}
-                </p>
-              )}
+              <div class:list={[promo.destacada && 'lg:col-span-8']}>
+                {promo.etiqueta && <p class="rotulo text-papel">{promo.etiqueta}</p>}
+                <h3
+                  class:list={[
+                    'cartel mt-1',
+                    promo.destacada ? 'text-titulo-1' : 'text-titulo-3 lg:text-[2.25rem] lg:leading-none',
+                  ]}
+                >
+                  {promo.titulo}
+                </h3>
+                <p class="mt-2 max-w-2xl text-papel">{promo.descripcion}</p>
+                {promo.condiciones && <p class="mt-1 text-chico text-papel">{promo.condiciones}</p>}
+              </div>
 
-              <h3 class="font-display text-xl leading-snug font-bold">{promo.titulo}</h3>
-              <p class="grow text-tinta-suave">{promo.descripcion}</p>
-
-              {promo.condiciones && (
-                <p class="text-sm text-tinta-suave">{promo.condiciones}</p>
-              )}
-
-              <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-crema-borde pt-3">
-                <p class="font-display text-lg font-bold text-ladrillo">
-                  {precio(promo.precio)}
-                </p>
-
+              <div
+                class:list={[
+                  'mt-auto flex flex-wrap items-center gap-x-5 gap-y-3',
+                  promo.destacada && 'lg:col-span-4 lg:justify-end',
+                ]}
+              >
+                {promo.precio != null ? (
+                  <p class="rotulo text-[1.5rem] tabular-nums">{precio(promo.precio)}</p>
+                ) : (
+                  <p class="rotulo text-papel">Precio por WhatsApp</p>
+                )}
                 <button
                   type="button"
-                  class="boton boton-primario solo-js !min-h-11 !px-4 !py-2 text-sm"
+                  class="btn btn-crema btn-chico solo-js"
                   data-agregar
                   data-id={`promo-${promo.id}`}
                   data-item-nombre={promo.titulo}
                   data-precio={promo.precio ?? ''}
                   data-origen="promo"
                 >
-                  Agregar
+                  <span data-texto-boton>Agregar al pedido</span>
                 </button>
-
                 <a
-                  href={linkWhatsApp(
-                    `¡Hola ${negocio.nombre}! Quería aprovechar la promo: ${promo.titulo}.`,
-                  )}
+                  href={linkWhatsApp(`¡Hola ${negocio.nombre}! Quería aprovechar la promo: ${promo.titulo}.`)}
                   target="_blank"
                   rel="noopener"
-                  class="boton boton-primario sin-js !min-h-11 !px-4 !py-2 text-sm"
+                  class="btn btn-crema btn-chico sin-js"
                 >
                   Pedir
                 </a>

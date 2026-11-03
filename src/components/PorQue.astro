@@ -1,6 +1,8 @@
 ---
 /**
- * "Por que La Plaza": cuatro razones cortas.
+ * "Por que La Plaza": cuatro razones, dichas como un cartel y no como una
+ * grilla de iconitos. Es el bloque con mas aire de la pagina: despues de la
+ * carta (que es densa) hace falta respirar.
  *
  * Todas salen de lo que el local comunica de verdad (todo al horno, menu
  * distinto cada dia, delivery propio). Nada de "20 anos de trayectoria" ni
@@ -8,107 +10,41 @@
  */
 const razones = [
   {
-    titulo: 'Todo al horno',
+    titulo: 'Todo al horno.',
     texto: 'Es como cocinamos: al horno, no frito. Lo decimos porque es lo que hacemos.',
-    icono: 'horno',
   },
   {
-    titulo: 'Cocina casera',
+    titulo: 'Cocina casera.',
     texto: 'Pastas, tartas y milanesas rellenas hechas acá, como en casa.',
-    icono: 'olla',
   },
   {
-    titulo: 'Menú distinto cada día',
-    texto: 'El menú del día cambia todos los días. Nunca comés lo mismo dos veces seguidas.',
-    icono: 'calendario',
+    titulo: 'Un menú distinto cada día.',
+    texto: 'Nunca comés lo mismo dos veces seguidas. Lo publicamos acá y en Instagram.',
   },
   {
-    titulo: 'Delivery propio',
+    titulo: 'Delivery propio.',
     texto: 'Te lo llevamos nosotros, sin apps de por medio. El radio es limitado: consultanos.',
-    icono: 'moto',
   },
-] as const;
+];
 ---
 
-<section id="por-que" class="scroll-mt-20 py-12 sm:py-16">
-  <div class="contenedor">
-    <h2 class="titulo-seccion max-w-2xl">Por qué La Plaza</h2>
-
-    <ul class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-      {
-        razones.map((razon) => (
-          <li class="flex gap-4 sm:flex-col">
-            <p
-              class="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-ladrillo/10 text-ladrillo"
-              aria-hidden="true"
-            >
-              {razon.icono === 'horno' && (
-                <svg
-                  class="size-6"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                >
-                  <rect x="3" y="3" width="18" height="18" rx="2.5" />
-                  <path d="M3 8.5h18" />
-                  <rect x="6.5" y="12" width="11" height="6" rx="1.5" />
-                  <path d="M7 5.8h2M12 5.8h5" />
-                </svg>
-              )}
-              {razon.icono === 'olla' && (
-                <svg
-                  class="size-6"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                >
-                  <path d="M4 9h16v6a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z" />
-                  <path d="M2 9h20" />
-                  <path d="M8 6c0-1.2 1.8-1.2 1.8-2.4M12 6c0-1.2 1.8-1.2 1.8-2.4" />
-                </svg>
-              )}
-              {razon.icono === 'calendario' && (
-                <svg
-                  class="size-6"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                >
-                  <rect x="3.5" y="5" width="17" height="15" rx="2.5" />
-                  <path d="M3.5 10h17M8 3v4M16 3v4" />
-                  <path d="M8.5 14.5h3" />
-                </svg>
-              )}
-              {razon.icono === 'moto' && (
-                <svg
-                  class="size-6"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                >
-                  <circle cx="5.5" cy="17" r="3" />
-                  <circle cx="18.5" cy="17" r="3" />
-                  <path d="M8.5 17h7l-3-8h-2.5" />
-                  <path d="M13 9h4l1.5 8" />
-                </svg>
-              )}
-            </p>
-
-            <div>
-              <h3 class="font-display text-lg font-bold sm:mt-3">{razon.titulo}</h3>
-              <p class="mt-1 text-tinta-suave">{razon.texto}</p>
-            </div>
-          </li>
-        ))
-      }
-    </ul>
-  </div>
+<section id="por-que" class="caja py-aire">
+  <h2 class="rotulo text-ladrillo">Por qué La Plaza</h2>
+  <ol class="mt-4 border-t-[3px] border-tinta">
+    {
+      razones.map((r, i) => (
+        <li class="grid gap-x-10 gap-y-2 border-b border-tinta/20 py-6 lg:grid-cols-12 lg:items-baseline lg:py-9">
+          <p
+            class:list={[
+              'cartel lg:col-span-7',
+              i === 0 ? 'text-titulo-1 text-ladrillo' : 'text-titulo-2',
+            ]}
+          >
+            {r.titulo}
+          </p>
+          <p class="max-w-xl text-lead text-tinta-suave lg:col-span-5">{r.texto}</p>
+        </li>
+      ))
+    }
+  </ol>
 </section>

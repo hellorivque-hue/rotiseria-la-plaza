@@ -10,7 +10,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import AvisoCarga from '../components/AvisoCarga.astro';
 import Carrito from '../components/Carrito.astro';
-import { negocio } from '../lib/datos';
+import { negocio, menuSemanal } from '../lib/datos';
 
 interface Props {
   titulo: string;
@@ -33,6 +33,16 @@ const {
 
 const canonica = new URL(Astro.url.pathname, Astro.site ?? 'https://rotiserialaplaza.com.ar');
 const urlOg = new URL(imagenOg, Astro.site ?? 'https://rotiserialaplaza.com.ar');
+
+/*
+  Lo que el script de "hoy" necesita saber, resuelto en el build: que dias
+  tienen menu cargado y que dias el local no abre.
+*/
+const hoyDatos = JSON.stringify({
+  zona: negocio.zonaHoraria,
+  conMenu: menuSemanal.filter((d) => d.principal).map((d) => d.dia),
+  cerrados: negocio.horarios.filter((h) => h.turnos.length === 0).map((h) => h.dia),
+});
 ---
 
 <!doctype html>
@@ -61,17 +71,17 @@ const urlOg = new URL(imagenOg, Astro.site ?? 'https://rotiserialaplaza.com.ar')
     <meta property="og:locale" content="es_AR" />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <!-- Las dos fuentes se usan arriba de todo, conviene precargarlas -->
+    <!-- Las dos fuentes se usan en la primera pantalla: se precargan. -->
     <link
       rel="preload"
-      href="/fonts/bitter-latin-variable.woff2"
+      href="/fonts/archivo-latin-variable.woff2"
       as="font"
       type="font/woff2"
       crossorigin
     />
     <link
       rel="preload"
-      href="/fonts/inter-latin-variable.woff2"
+      href="/fonts/sansita-black-italic-latin.woff2"
       as="font"
       type="font/woff2"
       crossorigin
@@ -83,20 +93,38 @@ const urlOg = new URL(imagenOg, Astro.site ?? 'https://rotiserialaplaza.com.ar')
     <slot name="head" />
 
     <!--
-      Marca que hay JavaScript. Todo lo que no funciona sin JS (solo el carrito)
-      esta oculto hasta que esta linea corre. Va inline y arriba para que no
-      haya parpadeo.
+      Corre antes de pintar nada, por eso va inline y en el <head>:
+      1. Marca que hay JavaScript (lo del carrito esta oculto hasta aca).
+      2. Pone en <html> que dia es hoy EN PUNTA ALTA, si hay menu cargado para
+         hoy y si hoy el local no abre. El CSS muestra el plato que
+         corresponde con eso, sin que nada se mueva despues de cargar.
+         El sitio es estatico: el build no sabe que dia va a ser cuando
+         alguien entre, asi que esto no se puede resolver antes.
     -->
-    <script is:inline>
-      document.documentElement.classList.remove('no-js');
-      document.documentElement.classList.add('js');
+    <script is:inline define:vars={{ hoyDatos }}>
+      (function () {
+        var raiz = document.documentElement;
+        raiz.classList.remove('no-js');
+        raiz.classList.add('js');
+        try {
+          var d = JSON.parse(hoyDatos);
+          var dia = new Intl.DateTimeFormat('es-AR', { timeZone: d.zona, weekday: 'long' })
+            .format(new Date())
+            .normalize('NFD')
+            .replace(/[̀-ͯ]/g, '')
+            .toLowerCase();
+          raiz.dataset.hoy = dia;
+          raiz.dataset.hoyConMenu = String(d.conMenu.indexOf(dia) >= 0);
+          raiz.dataset.hoyCerrado = String(d.cerrados.indexOf(dia) >= 0);
+        } catch (e) {}
+      })();
     </script>
   </head>
 
-  <body class="min-h-dvh bg-crema text-tinta antialiased">
+  <body class="min-h-dvh">
     <a
       href="#contenido"
-      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-full focus:bg-ladrillo focus:px-5 focus:py-3 focus:font-semibold focus:text-white focus:shadow-lg"
+      class="btn btn-ladrillo sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-5 focus:py-3"
       >Saltar al contenido</a
     >
 

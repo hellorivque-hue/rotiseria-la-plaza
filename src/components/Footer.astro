@@ -1,8 +1,12 @@
 ---
 /**
- * Pie del sitio: datos de contacto, horarios y redes.
+ * Pie del sitio: la marca grande, contacto, horarios y pedidos.
+ *
+ * El sello redondo aparece aca solo en el celular: desde tablet ya esta al
+ * lado de la semana. Uno por pantalla, no mas.
  */
 import Logo from './Logo.astro';
+import Sello from './Sello.astro';
 import { negocio, linkWhatsApp, urlComoLlegar } from '../lib/datos';
 
 const anio = new Date().getFullYear();
@@ -10,49 +14,46 @@ const enHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
 const base = enHome ? '' : '/';
 ---
 
-<footer class="mt-16 bg-tinta text-crema/85">
-  <div class="contenedor grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
-    <div class="sm:col-span-2 lg:col-span-1">
-      <Logo tamano="grande" sobre="oscuro" />
-      <p class="mt-4 max-w-xs text-sm leading-relaxed">
-        {negocio.descripcionCorta}
-      </p>
+<footer class="sup-tinta">
+  <div class="caja grid gap-x-8 gap-y-10 pt-seccion pb-denso md:grid-cols-12 lg:gap-x-10">
+    <div class="flex items-start justify-between gap-6 md:col-span-12 md:block lg:col-span-4">
+      <div>
+        <Logo tamano="grande" />
+        <p class="mt-4 max-w-xs text-papel">{negocio.descripcionCorta}</p>
+      </div>
+      <Sello class="w-28 shrink-0 text-crema md:hidden" giro={10} />
     </div>
 
-    <div>
-      <h2 class="font-display text-lg font-bold text-crema">Dónde estamos</h2>
-      <address class="mt-3 space-y-1 text-sm not-italic">
-        <p>{negocio.direccion.calle}</p>
-        <p>
-          {negocio.direccion.localidad} ({negocio.direccion.codigoPostal}), {
-            negocio.direccion.provincia
-          }
-        </p>
-        <p class="pt-2">
-          <a
-            href={`tel:${negocio.telefono.link}`}
-            class="inline-flex min-h-11 items-center rounded font-semibold text-mostaza hover:underline"
-            >{negocio.telefono.visible}</a
-          >
+    <div class="md:col-span-4 lg:col-span-3">
+      <h2 class="rotulo text-papel">Dónde estamos</h2>
+      <address class="mt-3 not-italic">
+        <p class="font-semibold">{negocio.direccion.calle}</p>
+        <p class="text-papel">
+          {negocio.direccion.localidad} ({negocio.direccion.codigoPostal}), {negocio.direccion.provincia}
         </p>
       </address>
-      <a
-        href={urlComoLlegar()}
-        target="_blank"
-        rel="noopener"
-        class="inline-flex min-h-11 items-center text-sm font-medium underline underline-offset-4 hover:text-mostaza"
-        >Cómo llegar</a
-      >
+      <ul class="mt-2">
+        <li>
+          <a href={`tel:${negocio.telefono.link}`} class="enlace inline-flex min-h-11 items-center font-semibold tabular-nums">
+            {negocio.telefono.visible}
+          </a>
+        </li>
+        <li>
+          <a href={urlComoLlegar()} target="_blank" rel="noopener" class="enlace inline-flex min-h-11 items-center">
+            Cómo llegar
+          </a>
+        </li>
+      </ul>
     </div>
 
-    <div>
-      <h2 class="font-display text-lg font-bold text-crema">Horarios</h2>
-      <ul class="mt-3 space-y-1 text-sm">
+    <div class="md:col-span-4 lg:col-span-3">
+      <h2 class="rotulo text-papel">Horarios</h2>
+      <ul class="mt-3 text-chico">
         {
           negocio.horarios.map((h) => (
-            <li class="flex justify-between gap-4">
+            <li class="flex justify-between gap-4 py-0.5 hoy:font-bold" data-dia={h.dia}>
               <span>{h.nombre}</span>
-              <span class="text-right text-crema/70">
+              <span class="text-right text-papel tabular-nums hoy:text-crema">
                 {h.turnos.length === 0
                   ? 'Cerrado'
                   : h.turnos.map((t) => `${t.desde}–${t.hasta}`).join(' · ')}
@@ -63,52 +64,39 @@ const base = enHome ? '' : '/';
       </ul>
     </div>
 
-    <div>
-      <h2 class="font-display text-lg font-bold text-crema">Pedidos</h2>
-      <ul class="mt-3 space-y-3 text-sm">
+    <div class="md:col-span-4 lg:col-span-2">
+      <h2 class="rotulo text-papel">Pedidos</h2>
+      <ul class="mt-2">
         <li>
           <a
             href={linkWhatsApp(`¡Hola ${negocio.nombre}! Quería hacer un pedido.`)}
             target="_blank"
             rel="noopener"
-            class="inline-flex min-h-11 items-center font-semibold text-mostaza hover:underline"
-            >Pedir por WhatsApp</a
+            class="enlace inline-flex min-h-11 items-center font-semibold"
           >
+            Pedir por WhatsApp
+          </a>
         </li>
         <li>
-          <a
-            href={negocio.redes.instagram.url}
-            target="_blank"
-            rel="noopener me"
-            class="inline-flex min-h-11 items-center hover:text-mostaza hover:underline"
-            >Instagram {negocio.redes.instagram.usuario}</a
-          >
+          <a href={negocio.redes.instagram.url} target="_blank" rel="noopener me" class="enlace inline-flex min-h-11 items-center">
+            Instagram
+          </a>
         </li>
         <li>
-          <a
-            href={`${base}#carta`}
-            class="inline-flex min-h-11 items-center hover:text-mostaza hover:underline"
-            >Ver la carta</a
-          >
+          <a href={`${base}#carta`} class="enlace inline-flex min-h-11 items-center">La carta</a>
         </li>
       </ul>
     </div>
   </div>
 
-  <div class="border-t border-white/10">
-    <div
-      class="contenedor flex flex-col gap-2 py-5 text-xs text-crema/60 sm:flex-row sm:items-center sm:justify-between"
-    >
-      <p>© {anio} {negocio.nombre}. {negocio.direccion.completa}.</p>
-      <p>
-        Sitio hecho por
-        <a
-          href="#"
-          class="inline-flex min-h-11 items-center underline underline-offset-2 hover:text-mostaza"
-          data-todo="Reemplazar por el nombre y el link del desarrollador"
-          >TODO: tu nombre acá</a
-        >
-      </p>
+  <div class="border-t border-papel/20">
+    <div class="caja flex flex-col gap-1 py-4 text-chico text-papel sm:flex-row sm:items-center sm:justify-between">
+      <p class="py-3">© {anio} {negocio.nombre}. {negocio.direccion.completa}.</p>
+      {/*
+        Credito del desarrollador: se saco hasta tener el nombre y el link.
+        Para volver a ponerlo:
+          <p>Sitio hecho por <a href="LINK" class="enlace inline-flex min-h-11 items-center">NOMBRE</a></p>
+      */}
     </div>
   </div>
 </footer>

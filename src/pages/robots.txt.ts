@@ -16,6 +16,7 @@ Allow: /
 
 # Páginas de apoyo: no aportan nada en el buscador.
 Disallow: /gracias
+Disallow: /estilo
 
 Sitemap: ${new URL('sitemap-index.xml', base).href}
 `;

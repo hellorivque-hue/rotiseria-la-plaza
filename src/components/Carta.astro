@@ -1,47 +1,53 @@
 ---
 /**
- * La carta permanente.
+ * La carta permanente, como una carta impresa: renglones, no tarjetas.
  *
- * Los chips de categoria son enlaces de verdad (<a href="#...">): navegan sin
- * recargar, andan sin JavaScript y ya vienen con navegacion por teclado. El JS
- * solo agrega el resaltado del chip de la seccion que estas mirando.
+ * Las pestanas de categoria son enlaces de verdad (<a href="#...">): navegan
+ * sin recargar, andan sin JavaScript y ya vienen con navegacion por teclado.
+ * El JS solo marca la pestana de la seccion que estas mirando.
+ *
+ * Precios: si TODA la carta esta sin precio (hoy es asi), no se repite
+ * "Consultar" 79 veces: va un solo aviso arriba. Apenas se carga un precio,
+ * aparece la columna de precios con la linea de puntos, y los que sigan sin
+ * precio dicen "Consultar".
  */
 import { cartaVisible, negocio, linkWhatsApp } from '../lib/datos';
 import { precio } from '../lib/formato';
+
+const hayPrecios = cartaVisible.some((c) => c.items.some((i) => i.precio !== null));
 ---
 
-<section id="carta" class="scroll-mt-20 py-12 sm:py-16">
-  <div class="contenedor">
-    <header class="max-w-2xl">
-      <p class="text-sm font-bold tracking-[0.2em] text-ladrillo uppercase">
-        Siempre disponible
-      </p>
-      <h2 class="titulo-seccion mt-2">La carta</h2>
-      <p class="mt-3 text-lg text-tinta-suave">
-        Además del menú del día, esto lo tenemos todos los días.
-      </p>
-    </header>
-  </div>
+<section id="carta" class="sup-papel pt-seccion pb-denso">
+  <header class="caja grid gap-x-10 gap-y-3 lg:grid-cols-12 lg:items-end">
+    <div class="lg:col-span-7">
+      <p class="rotulo text-ladrillo">Siempre disponible</p>
+      <h2 class="cartel mt-2 text-titulo-1">La carta</h2>
+    </div>
+    <div class="lg:col-span-5">
+      <p class="text-lead">Además del menú del día, esto lo tenemos todos los días.</p>
+      {
+        !hayPrecios && (
+          <p class="rotulo mt-2 text-perejil">Precios por WhatsApp, al hacer el pedido</p>
+        )
+      }
+    </div>
+  </header>
 
   {
     cartaVisible.length === 0 ? (
-      <div class="contenedor">
-        <p class="tarjeta mt-8 border-dashed p-6 text-tinta-suave">
-          Estamos cargando la carta. Mientras tanto, consultanos por WhatsApp.
-        </p>
-      </div>
+      <p class="caja mt-8 text-lead">Estamos cargando la carta. Mientras tanto, consultanos por WhatsApp.</p>
     ) : (
       <>
         <nav
           aria-label="Categorías de la carta"
-          class="sticky top-16 z-30 mt-6 border-y border-crema-borde bg-crema/95 py-3 backdrop-blur"
+          class="sup-papel sticky top-14 z-30 mt-8 border-y-2 border-tinta"
         >
-          <ul class="contenedor sin-barra flex gap-2 overflow-x-auto" data-chips>
+          <ul class="caja rotulo sin-barra flex overflow-x-auto" data-chips>
             {cartaVisible.map((cat) => (
               <li class="shrink-0">
                 <a
                   href={`#cat-${cat.id}`}
-                  class="inline-flex min-h-11 items-center rounded-full border border-crema-borde bg-white px-4 py-2 text-sm font-semibold whitespace-nowrap text-tinta-suave transition-colors hover:border-ladrillo hover:text-ladrillo aria-[current=true]:border-ladrillo aria-[current=true]:bg-ladrillo aria-[current=true]:text-white"
+                  class="-mb-0.5 inline-flex min-h-12 items-center border-b-[3px] border-transparent px-3 pt-[3px] whitespace-nowrap transition-colors hover:border-tinta/40 aria-[current=true]:border-ladrillo aria-[current=true]:text-ladrillo"
                   data-chip={cat.id}
                 >
                   {cat.nombre}
@@ -51,65 +57,66 @@ import { precio } from '../lib/formato';
           </ul>
         </nav>
 
-        <div class="contenedor mt-10 flex flex-col gap-12">
+        <div class="caja">
           {cartaVisible.map((cat) => (
-            <section id={`cat-${cat.id}`} class="scroll-mt-36" data-categoria={cat.id}>
-              <h3 class="font-display text-2xl font-bold text-ladrillo sm:text-3xl">
-                {cat.nombre}
-              </h3>
-              {cat.descripcion && (
-                <p class="mt-1 text-tinta-suave">{cat.descripcion}</p>
-              )}
+            <section
+              id={`cat-${cat.id}`}
+              class="grid gap-x-10 border-b border-tinta/20 py-8 last:border-b-0 lg:grid-cols-12 lg:py-12"
+              data-categoria={cat.id}
+            >
+              <div class="lg:col-span-3">
+                <div class="lg:sticky lg:top-36">
+                  <h3 class="text-titulo-3 leading-none font-black tracking-wide text-ladrillo uppercase [font-stretch:68%] lg:text-[2rem]">
+                    {cat.nombre}
+                  </h3>
+                  {cat.descripcion && <p class="mt-2 text-chico text-tinta-suave">{cat.descripcion}</p>}
+                </div>
+              </div>
 
-              <ul class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <ul class="mt-4 md:columns-2 md:gap-x-8 lg:col-span-9 lg:mt-0 lg:gap-x-10">
                 {cat.items.map((item) => (
-                  <li class="tarjeta flex flex-col gap-3 p-5">
-                    <div class="flex items-start justify-between gap-3">
-                      <h4 class="font-display text-lg leading-snug font-bold text-tinta">
-                        {item.nombre}
-                      </h4>
-                      {item.recomendado && (
-                        <p class="shrink-0 rounded-full bg-mostaza/25 px-2.5 py-1 text-xs font-bold tracking-wide text-tinta uppercase">
-                          Recomendado
-                        </p>
+                  <li class="flex break-inside-avoid items-center gap-3 border-b border-tinta/15 py-3">
+                    <div class="min-w-0 grow">
+                      {item.recomendado && <p class="rotulo text-ladrillo">Recomendado</p>}
+                      {hayPrecios ? (
+                        <div class="flex items-end gap-2">
+                          <p class="leading-snug font-semibold">{item.nombre}</p>
+                          <span class="guia" aria-hidden="true" />
+                          <p
+                            class:list={[
+                              'rotulo shrink-0 tabular-nums',
+                              item.precio === null ? 'text-perejil' : 'text-[0.9375rem] text-tinta',
+                            ]}
+                          >
+                            {precio(item.precio)}
+                          </p>
+                        </div>
+                      ) : (
+                        <p class="leading-snug font-semibold">{item.nombre}</p>
                       )}
+                      {item.descripcion && <p class="text-chico text-tinta-suave">{item.descripcion}</p>}
+                      {item.unidad && <p class="text-chico text-tinta-suave">{item.unidad}</p>}
                     </div>
 
-                    {item.descripcion && (
-                      <p class="text-tinta-suave">{item.descripcion}</p>
-                    )}
-                    {item.unidad && (
-                      <p class="text-sm text-tinta-suave">{item.unidad}</p>
-                    )}
-
-                    <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-crema-borde pt-3">
-                      <p class="font-display text-lg font-bold text-ladrillo">
-                        {precio(item.precio)}
-                      </p>
-
-                      <button
-                        type="button"
-                        class="boton boton-primario solo-js !min-h-11 !px-4 !py-2 text-sm"
-                        data-agregar
-                        data-id={item.id}
-                        data-item-nombre={item.nombre}
-                        data-precio={item.precio ?? ''}
-                        data-origen="carta"
-                      >
-                        Agregar
-                      </button>
-
-                      <a
-                        href={linkWhatsApp(
-                          `¡Hola ${negocio.nombre}! Quería pedir: ${item.nombre}.`,
-                        )}
-                        target="_blank"
-                        rel="noopener"
-                        class="boton boton-primario sin-js !min-h-11 !px-4 !py-2 text-sm"
-                      >
-                        Pedir
-                      </a>
-                    </div>
+                    <button
+                      type="button"
+                      class="btn-agregar solo-js"
+                      aria-label={`Agregar ${item.nombre} al pedido`}
+                      data-agregar
+                      data-id={item.id}
+                      data-item-nombre={item.nombre}
+                      data-precio={item.precio ?? ''}
+                      data-origen="carta"
+                    >
+                    </button>
+                    <a
+                      href={linkWhatsApp(`¡Hola ${negocio.nombre}! Quería pedir: ${item.nombre}.`)}
+                      target="_blank"
+                      rel="noopener"
+                      class="enlace sin-js inline-flex min-h-11 shrink-0 items-center font-semibold text-ladrillo"
+                    >
+                      Pedir
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -117,9 +124,11 @@ import { precio } from '../lib/formato';
           ))}
         </div>
 
-        <p class="contenedor mt-8 text-sm text-tinta-suave">
-          Precios sujetos a cambio: confirmalos al hacer el pedido.
-        </p>
+        {hayPrecios && (
+          <p class="caja mt-2 text-chico text-tinta-suave">
+            Precios sujetos a cambio: confirmalos al hacer el pedido.
+          </p>
+        )}
       </>
     )
   }
@@ -127,9 +136,9 @@ import { precio } from '../lib/formato';
 
 <script>
   /**
-   * Resalta el chip de la categoria que se esta viendo y lo deja a la vista
+   * Marca la pestana de la categoria que se esta viendo y la deja a la vista
    * dentro de la barra horizontal. Es solo una ayuda visual: si esto no corre,
-   * los chips siguen funcionando como enlaces.
+   * las pestanas siguen funcionando como enlaces.
    */
   const chips = new Map<string, HTMLAnchorElement>();
   for (const chip of document.querySelectorAll<HTMLAnchorElement>('[data-chip]')) {
@@ -153,8 +162,8 @@ import { precio } from '../lib/formato';
     };
 
     /**
-     * Desplaza SOLO la barra de chips, nunca la pagina.
-     * (scrollIntoView movería el scroll vertical y haría saltar el sitio.)
+     * Desplaza SOLO la barra de pestanas, nunca la pagina.
+     * (scrollIntoView moveria el scroll vertical y haria saltar el sitio.)
      */
     const barra = document.querySelector<HTMLElement>('[data-chips]');
 
@@ -172,7 +181,7 @@ import { precio } from '../lib/formato';
       });
     };
 
-    // Feedback inmediato al tocar un chip, sin esperar al scroll.
+    // Respuesta inmediata al tocar una pestana, sin esperar al scroll.
     for (const [clave, chip] of chips) {
       chip.addEventListener('click', () => marcar(clave));
     }
@@ -189,8 +198,8 @@ import { precio } from '../lib/formato';
         const primera = visibles[0]?.target as HTMLElement | undefined;
         if (primera?.dataset.categoria) marcar(primera.dataset.categoria);
       },
-      // La franja de arriba, justo debajo del header y de los chips.
-      { rootMargin: '-180px 0px -60% 0px', threshold: 0 },
+      // La franja de arriba, justo debajo del header y de las pestanas.
+      { rootMargin: '-140px 0px -55% 0px', threshold: 0 },
     );
 
     for (const seccion of secciones) observador.observe(seccion);

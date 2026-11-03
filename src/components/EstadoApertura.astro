@@ -1,40 +1,52 @@
 ---
 /**
- * Cartelito "Abierto ahora / Cerrado".
+ * "Abierto · cierra 14:00" / "Cerrado · abre mañana 11:00".
  *
  * Se renderiza en el build y despues, ya en el navegador, se recalcula con la
  * hora real convertida a la zona horaria del local. Se refresca cada minuto,
  * asi alguien que deja la pestana abierta no ve "Abierto" cuando ya cerro.
+ *
+ * El punto: lleno (perejil, o crema sobre rojo) = abierto; aro vacio = cerrado.
+ * La diferencia no depende solo del color.
  */
 import { negocio } from '../lib/datos';
 import { estadoApertura } from '../lib/horarios';
 
 interface Props {
   class?: string;
-  /** "claro" = sobre fondo crema, "oscuro" = sobre fondo ladrillo. */
+  /** "claro" = sobre crema o papel, "oscuro" = sobre ladrillo o tinta. */
   sobre?: 'claro' | 'oscuro';
 }
 
 const { class: clase = '', sobre = 'claro' } = Astro.props;
 const inicial = estadoApertura(negocio.horarios, negocio.zonaHoraria);
-
-const fondo =
-  sobre === 'claro'
-    ? 'bg-white/85 border-crema-borde text-tinta'
-    : 'bg-black/25 border-white/25 text-crema';
-const punto = inicial.abierto ? 'bg-verde-abierto' : 'bg-mostaza';
 ---
 
 <p
-  class={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium ${fondo} ${clase}`}
+  class={`estado-apertura rotulo inline-flex items-center gap-2 ${clase}`}
   data-estado-apertura
+  data-sobre={sobre}
+  data-abierto={String(inicial.abierto)}
 >
-  <span
-    class={`inline-block size-2.5 shrink-0 rounded-full ${punto}`}
-    data-punto
-    aria-hidden="true"></span>
+  <span class="punto size-2.5 shrink-0 rounded-full border-2" aria-hidden="true"></span>
   <span data-texto>{inicial.texto}</span>
 </p>
+
+<style is:global>
+  .estado-apertura .punto {
+    border-color: var(--color-ladrillo);
+  }
+  .estado-apertura[data-abierto='true'] .punto {
+    border-color: var(--color-perejil);
+    background-color: var(--color-perejil);
+  }
+  .estado-apertura[data-sobre='oscuro'] .punto {
+    border-color: currentColor;
+  }
+  .estado-apertura[data-sobre='oscuro'][data-abierto='true'] .punto {
+    background-color: currentColor;
+  }
+</style>
 
 <script>
   import negocio from '../data/negocio.json';
@@ -48,15 +60,10 @@ const punto = inicial.abierto ? 'bg-verde-abierto' : 'bg-mostaza';
 
     for (const nodo of document.querySelectorAll<HTMLElement>('[data-estado-apertura]')) {
       const texto = nodo.querySelector<HTMLElement>('[data-texto]');
-      const punto = nodo.querySelector<HTMLElement>('[data-punto]');
-
       if (texto && texto.textContent !== estado.texto) {
         texto.textContent = estado.texto;
       }
-      if (punto) {
-        punto.classList.toggle('bg-verde-abierto', estado.abierto);
-        punto.classList.toggle('bg-mostaza', !estado.abierto);
-      }
+      nodo.dataset.abierto = String(estado.abierto);
     }
 
     // El carrito lee esto para avisar si el local esta cerrado.

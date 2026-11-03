@@ -1,108 +1,168 @@
 ---
 /**
- * Hero: en 5 segundos tiene que quedar claro que es el lugar, si esta abierto
- * y como se pide. Nada mas.
+ * Hero: el plato de hoy, en grande. Es lo primero y lo mas grande del sitio.
+ *
+ * El sitio es estatico: el build no sabe que dia va a ser cuando alguien
+ * entre. Por eso se renderiza un panel por cada dia que tiene menu cargado, y
+ * el CSS muestra el de hoy usando el data-hoy que el <head> pone en <html>
+ * (ver Base.astro). No hay JavaScript despues de cargar y nada se mueve.
+ *
+ * Tres estados:
+ *   - hoy hay menu cargado ........ el plato, con HOY sellado
+ *   - hoy no hay menu cargado ..... "¿Que hay hoy?" y preguntar por WhatsApp
+ *   - hoy el local no abre ........ "Hoy descansamos" (domingo)
+ * Sin JavaScript se ve el segundo, y abajo la semana completa.
  */
 import { Image } from 'astro:assets';
 import EstadoApertura from './EstadoApertura.astro';
+import IconoWhatsApp from './IconoWhatsApp.astro';
 import heroPlato from '../assets/hero-plato.jpg';
-import { negocio, linkWhatsApp } from '../lib/datos';
+import { menuSemanal, negocio, linkWhatsApp } from '../lib/datos';
+import { precio } from '../lib/formato';
 
-const saludo = `¡Hola ${negocio.nombre}! Quería hacer un pedido.`;
-const reputacion = negocio.reputacion;
+const conMenu = menuSemanal.filter((d) => d.principal);
+const preguntar = linkWhatsApp(`¡Hola ${negocio.nombre}! ¿Qué menú hay hoy?`);
+// "Lunes a sábado de..." -> "lunes a sábado de...", para que siga a "Atendemos".
+const horarios = negocio.horariosTexto.charAt(0).toLowerCase() + negocio.horariosTexto.slice(1);
+const dejarPedido = linkWhatsApp(`¡Hola ${negocio.nombre}! Quería dejar un pedido para cuando abran.`);
 ---
 
-<section id="inicio" class="relative overflow-hidden bg-ladrillo text-crema">
-  <div class="absolute inset-0 opacity-[0.07]" aria-hidden="true">
-    <div
-      class="size-full"
-      style="background-image: radial-gradient(circle at 1px 1px, #fff 1.5px, transparent 0); background-size: 26px 26px;"
-    >
-    </div>
-  </div>
+<section id="inicio" class="sup-ladrillo">
+  <div class="caja grid gap-x-8 pt-6 md:grid-cols-12 md:pt-10 lg:gap-x-10 lg:pt-14">
+    <div class="md:col-span-7 md:pb-16 lg:pb-20">
+      <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+        <h1 class="rotulo text-papel">{negocio.nombre} · {negocio.direccion.localidad}</h1>
+        <div class="lg:hidden">
+          <EstadoApertura sobre="oscuro" />
+        </div>
+      </div>
 
-  <div
-    class="contenedor relative grid items-center gap-6 py-8 sm:gap-8 sm:py-14 lg:grid-cols-[1.15fr_1fr] lg:gap-14 lg:py-20"
-  >
-    <div>
-      <p
-        class="font-sans text-sm font-bold tracking-[0.28em] text-mostaza uppercase sm:text-base"
-      >
-        {negocio.lema}
-      </p>
+      {
+        conMenu.map((d) => (
+          <div class="hero-dia" data-dia={d.dia}>
+            <div class="mt-5 flex items-center gap-4 lg:mt-8">
+              <span class="sello sello-rect text-[1.875rem] text-crema lg:text-[2.75rem]">Hoy</span>
+              <p class="rotulo text-papel">
+                Menú del {d.nombre.toLowerCase()}
+                {d.destacado && <span class="block text-crema">{d.destacado}</span>}
+              </p>
+            </div>
 
-      <h1 class="mt-2 font-display text-[2.6rem] leading-[1.05] font-extrabold sm:text-6xl">
-        Rotisería <span class="text-mostaza">La Plaza</span>
-      </h1>
-
-      <p class="mt-3 max-w-lg text-lg leading-relaxed text-crema/90 sm:mt-4 sm:text-xl">
-        Comida casera hecha al horno, con un menú distinto cada día. Delivery
-        propio en Punta Alta y retiro en Brown 406.
-      </p>
-
-      <div class="mt-5 flex flex-wrap items-center gap-2 sm:gap-3">
-        <EstadoApertura sobre="oscuro" />
-        {
-          reputacion && (
-            <p class="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-black/25 px-3 py-1.5 text-sm">
-              <span aria-hidden="true" class="text-mostaza">
-                ★
-              </span>
-              <span>
-                {reputacion.puntaje.toLocaleString('es-AR')} en {reputacion.fuente}
-                <span class="text-crema/70">
-                  {' '}
-                  ({reputacion.cantidadOpiniones} opiniones)
-                </span>
-              </span>
+            <p class:list={['cartel mt-4 lg:mt-6', d.principal!.length > 22 ? 'text-cartel-largo' : 'text-cartel']}>
+              {d.principal}
             </p>
-          )
-        }
+            {d.guarnicion && <p class="mt-4 text-lead text-papel lg:mt-7">con {d.guarnicion}</p>}
+
+            <div class="mt-6 flex flex-wrap items-center gap-3 lg:mt-10">
+              <button
+                type="button"
+                class="btn btn-crema solo-js grow sm:grow-0"
+                data-agregar
+                data-abrir-pedido
+                data-id={`menu-${d.dia}`}
+                data-item-nombre={`Menú del ${d.nombre.toLowerCase()}: ${d.principal}`}
+                data-precio={d.precio ?? ''}
+                data-origen="menu"
+              >
+                <span data-texto-boton>Pedir este menú</span>
+              </button>
+              <a
+                href={linkWhatsApp(
+                  `¡Hola ${negocio.nombre}! Quería pedir el menú del ${d.nombre.toLowerCase()}: ${d.principal}.`,
+                )}
+                target="_blank"
+                rel="noopener"
+                class="btn btn-crema sin-js grow sm:grow-0"
+              >
+                <IconoWhatsApp />
+                Pedir este menú
+              </a>
+              <a href="#menu-del-dia" class="btn btn-linea shrink-0">La semana</a>
+              {d.precio != null && (
+                <p class="rotulo text-[1.75rem] tabular-nums sm:ml-2">{precio(d.precio)}</p>
+              )}
+            </div>
+            <p class="mt-3 text-chico text-papel">
+              {d.precio == null
+                ? 'Precio y envío te los confirmamos por WhatsApp.'
+                : 'Precio informativo: te lo confirmamos por WhatsApp junto con el envío.'}
+            </p>
+          </div>
+        ))
+      }
+
+      <div class="hero-generico">
+        <p class="rotulo mt-5 text-papel lg:mt-8">Menú del día</p>
+        <p class="cartel mt-3 text-cartel lg:mt-5">¿Qué hay hoy?</p>
+        <p class="mt-3 max-w-xl text-lead text-papel lg:mt-5">
+          El menú cambia todos los días y siempre es al horno. Escribinos y te contamos.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3 lg:mt-10">
+          <a href={preguntar} target="_blank" rel="noopener" class="btn btn-crema grow sm:grow-0">
+            <IconoWhatsApp />
+            Preguntar qué hay
+          </a>
+          <a href="#carta" class="btn btn-linea shrink-0">La carta</a>
+        </div>
       </div>
 
-      <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-        <a
-          href={linkWhatsApp(saludo)}
-          target="_blank"
-          rel="noopener"
-          class="boton boton-primario w-full sm:w-auto"
-        >
-          <svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path
-              d="M12.04 2C6.6 2 2.17 6.43 2.17 11.87c0 1.74.46 3.44 1.32 4.94L2 22l5.35-1.4a9.83 9.83 0 0 0 4.69 1.19h.01c5.44 0 9.87-4.43 9.87-9.87S17.48 2 12.04 2Zm5.43 12.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.65-2.05-.17-.3-.02-.46.13-.6.14-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.38-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35Z"
-            ></path>
-          </svg>
-          Pedir por WhatsApp
-        </a>
-
-        <a
-          href="#menu-del-dia"
-          class="boton w-full border-2 border-crema/40 text-crema hover:bg-white/10 sm:w-auto"
-        >
-          Ver el menú de hoy
-        </a>
+      <div class="hero-cerrado">
+        <div class="mt-5 flex items-center gap-4 lg:mt-8">
+          <span class="sello sello-rect text-[1.5rem] text-crema lg:text-[2.25rem]" style="--giro: 4deg">Cerrado</span>
+          <p class="rotulo text-papel">Hoy no abrimos</p>
+        </div>
+        <p class="cartel mt-4 text-cartel lg:mt-6">Hoy descansamos</p>
+        <p class="mt-3 max-w-xl text-lead text-papel lg:mt-5">
+          Atendemos {horarios} Si nos dejás el pedido por WhatsApp, te respondemos cuando abrimos.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3 lg:mt-10">
+          <a href={dejarPedido} target="_blank" rel="noopener" class="btn btn-crema grow sm:grow-0">
+            <IconoWhatsApp />
+            Dejar un pedido
+          </a>
+          <a href="#carta" class="btn btn-linea shrink-0">La carta</a>
+        </div>
       </div>
-
-      <p class="mt-3 text-sm text-crema/70">
-        {/*
-          Solo se baja la primera letra. Con toLowerCase() entero quedaba
-          "...22:30. domingos cerrado", con la D minuscula despues del punto.
-        */}
-        Atendemos {negocio.horariosTexto.charAt(0).toLowerCase() +
-          negocio.horariosTexto.slice(1)}
-      </p>
     </div>
 
-    <div class="relative">
+    <figure class="relative z-10 mt-8 -mb-24 self-start md:col-span-5 md:mt-0 md:mb-0 md:translate-y-20 lg:translate-y-28">
       <Image
         src={heroPlato}
         alt="Milanesa de ternera con fideos, servida en un plato de Rotisería La Plaza"
-        widths={[400, 600, 900]}
-        sizes="(min-width: 1024px) 460px, 92vw"
+        widths={[400, 640, 900, 1200]}
+        sizes="(min-width: 1408px) 536px, (min-width: 768px) 38vw, calc(100vw - 2rem)"
         loading="eager"
         fetchpriority="high"
-        class="aspect-[2/1] w-full rounded-2xl border-4 border-crema/20 object-cover shadow-[var(--shadow-flotante)] sm:aspect-[16/9] lg:aspect-square"
+        class="foto aspect-[4/3] w-full object-[45%_40%] md:aspect-[4/5]"
       />
-    </div>
+      <!-- La foto es siempre la misma: que no parezca el plato de hoy. Va como
+           etiqueta encima de la foto para leerse igual sobre rojo o sobre crema. -->
+      <figcaption class="rotulo absolute bottom-2 left-2 rounded-[var(--radius-sello)] bg-crema px-2 py-1 text-tinta">
+        De nuestra cocina
+      </figcaption>
+    </figure>
   </div>
 </section>
+
+<style is:global>
+  /* Que panel se ve. Ver el comentario de arriba y el script de Base.astro. */
+  .hero-dia,
+  .hero-cerrado {
+    display: none;
+  }
+  html[data-hoy='lunes'] .hero-dia[data-dia='lunes'],
+  html[data-hoy='martes'] .hero-dia[data-dia='martes'],
+  html[data-hoy='miercoles'] .hero-dia[data-dia='miercoles'],
+  html[data-hoy='jueves'] .hero-dia[data-dia='jueves'],
+  html[data-hoy='viernes'] .hero-dia[data-dia='viernes'],
+  html[data-hoy='sabado'] .hero-dia[data-dia='sabado'],
+  html[data-hoy='domingo'] .hero-dia[data-dia='domingo'],
+  html[data-hoy-cerrado='true'] .hero-cerrado {
+    display: block;
+  }
+  html[data-hoy-con-menu='true'] .hero-generico,
+  html[data-hoy-cerrado='true'] .hero-generico,
+  html[data-hoy-cerrado='true'] .hero-dia {
+    display: none;
+  }
+</style>

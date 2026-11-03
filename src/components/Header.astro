@@ -7,6 +7,8 @@
  * hay abajo solo agrega comodidades (cerrarlo al elegir una seccion o con Esc).
  */
 import Logo from './Logo.astro';
+import EstadoApertura from './EstadoApertura.astro';
+import IconoWhatsApp from './IconoWhatsApp.astro';
 import { negocio, promos, linkWhatsApp } from '../lib/datos';
 
 // En las paginas de apoyo los anclajes tienen que volver a la home.
@@ -17,34 +19,37 @@ const secciones = [
   { href: `${base}#menu-del-dia`, texto: 'Menú de hoy' },
   { href: `${base}#carta`, texto: 'La carta' },
   ...(promos.length > 0 ? [{ href: `${base}#promos`, texto: 'Promos' }] : []),
-  { href: `${base}#delivery`, texto: 'Delivery' },
+  { href: `${base}#delivery`, texto: 'Delivery y horarios' },
   { href: `${base}#donde-estamos`, texto: 'Dónde estamos' },
 ];
 
 const saludo = `¡Hola ${negocio.nombre}! Quería hacer un pedido.`;
 ---
 
-<header
-  class="sticky top-0 z-40 border-b border-crema-borde bg-crema/95 backdrop-blur supports-[backdrop-filter]:bg-crema/80"
->
-  <div class="contenedor flex h-16 items-center justify-between gap-3">
+<header class="sup-crema sticky top-0 z-40 border-b-2 border-tinta">
+  <div class="caja flex h-14 items-center gap-5">
     <a
       href={enHome ? '#inicio' : '/'}
-      class="flex items-center rounded-lg py-1"
+      class="inline-flex min-h-11 shrink-0 items-center text-ladrillo"
       aria-label={`${negocio.nombre}, ir al inicio`}
     >
       <Logo tamano="chico" />
     </a>
 
+    <!-- En el celular el estado va en el hero; aca solo cuando hay lugar. -->
+    <div class="hidden lg:block">
+      <EstadoApertura />
+    </div>
+
     <!-- Navegacion de escritorio -->
-    <nav aria-label="Secciones del sitio" class="hidden lg:block">
-      <ul class="flex items-center gap-1">
+    <nav aria-label="Secciones del sitio" class="ml-auto hidden lg:block">
+      <ul class="rotulo flex items-center">
         {
           secciones.map((s) => (
             <li>
               <a
                 href={s.href}
-                class="inline-flex min-h-11 items-center rounded-full px-3 py-2 text-sm font-medium text-tinta-suave transition-colors hover:bg-crema-hueso hover:text-ladrillo"
+                class="inline-flex min-h-11 items-center border-b-[3px] border-transparent px-3 pt-[3px] transition-colors hover:border-ladrillo hover:text-ladrillo"
               >
                 {s.texto}
               </a>
@@ -54,75 +59,68 @@ const saludo = `¡Hola ${negocio.nombre}! Quería hacer un pedido.`;
       </ul>
     </nav>
 
-    <div class="flex items-center gap-2">
-      <a
-        href={linkWhatsApp(saludo)}
-        target="_blank"
-        rel="noopener"
-        class="boton boton-secundario hidden !min-h-11 !px-4 !py-2 text-sm sm:inline-flex"
+    <a
+      href={linkWhatsApp(saludo)}
+      target="_blank"
+      rel="noopener"
+      class="btn btn-ladrillo btn-chico hidden lg:inline-flex"
+    >
+      <IconoWhatsApp class="size-4" />
+      Pedir
+    </a>
+
+    <!-- Menu mobile: <details> nativo, anda sin JavaScript -->
+    <details class="relative ml-auto lg:hidden" data-menu-mobile>
+      <summary
+        class="btn btn-linea btn-chico list-none [&::-webkit-details-marker]:hidden"
+        aria-label="Abrir el menú de navegación"
       >
-        <svg class="size-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path
-            d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.65-2.05-.17-.3-.02-.46.13-.6.14-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.38-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35Z"
-          ></path>
-          <path
-            d="M12.04 2C6.6 2 2.17 6.43 2.17 11.87c0 1.74.46 3.44 1.32 4.94L2 22l5.35-1.4a9.83 9.83 0 0 0 4.69 1.19h.01c5.44 0 9.87-4.43 9.87-9.87S17.48 2 12.04 2Zm0 17.98h-.01a8.2 8.2 0 0 1-4.17-1.14l-.3-.18-3.1.81.83-3.02-.2-.31a8.13 8.13 0 0 1-1.25-4.35c0-4.52 3.68-8.2 8.2-8.2 2.19 0 4.25.86 5.8 2.41a8.15 8.15 0 0 1 2.4 5.8c0 4.52-3.68 8.19-8.2 8.19Z"
-          ></path>
+        <svg
+          class="size-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.4"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
         </svg>
-        Pedir
-      </a>
+        <span>Menú</span>
+      </summary>
 
-      <!-- Menu mobile: <details> nativo, anda sin JavaScript -->
-      <details class="relative lg:hidden" data-menu-mobile>
-        <summary
-          class="boton boton-fantasma !min-h-11 !px-4 !py-2 list-none text-sm [&::-webkit-details-marker]:hidden"
-          aria-label="Abrir el menú de navegación"
-        >
-          <svg
-            class="size-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.2"
-            stroke-linecap="round"
-            aria-hidden="true"
+      <nav
+        aria-label="Secciones del sitio"
+        class="sup-crema absolute right-0 z-50 mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-[var(--radius-control)] border-2 border-tinta shadow-[var(--shadow-flota)]"
+      >
+        <EstadoApertura class="border-b border-tinta/15 px-4 py-3 md:hidden" />
+        <ul class="flex flex-col py-1">
+          {
+            secciones.map((s) => (
+              <li>
+                <a
+                  href={s.href}
+                  class="flex min-h-12 items-center px-4 font-semibold hover:bg-papel hover:text-ladrillo"
+                >
+                  {s.texto}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <div class="border-t border-tinta/15 p-3">
+          <a
+            href={linkWhatsApp(saludo)}
+            target="_blank"
+            rel="noopener"
+            class="btn btn-ladrillo w-full"
           >
-            <path d="M4 7h16M4 12h16M4 17h16"></path>
-          </svg>
-          <span>Menú</span>
-        </summary>
-
-        <nav
-          aria-label="Secciones del sitio"
-          class="absolute right-0 z-50 mt-3 w-64 rounded-2xl border border-crema-borde bg-white p-2 shadow-[var(--shadow-flotante)]"
-        >
-          <ul class="flex flex-col">
-            {
-              secciones.map((s) => (
-                <li>
-                  <a
-                    href={s.href}
-                    class="flex min-h-12 items-center rounded-xl px-4 py-3 font-medium text-tinta transition-colors hover:bg-crema-hueso hover:text-ladrillo"
-                  >
-                    {s.texto}
-                  </a>
-                </li>
-              ))
-            }
-            <li class="mt-1 border-t border-crema-borde pt-2">
-              <a
-                href={linkWhatsApp(saludo)}
-                target="_blank"
-                rel="noopener"
-                class="flex min-h-12 items-center rounded-xl px-4 py-3 font-semibold text-ladrillo hover:bg-crema-hueso"
-              >
-                Pedir por WhatsApp
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </details>
-    </div>
+            <IconoWhatsApp />
+            Pedir por WhatsApp
+          </a>
+        </div>
+      </nav>
+    </details>
   </div>
 </header>
 

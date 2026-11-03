@@ -24,11 +24,14 @@ const SITE_URL =
 export default defineConfig({
   site: SITE_URL,
   output: 'static',
+  // La barra flotante de Astro en desarrollo tapa las capturas de diseño.
+  devToolbar: { enabled: false },
   trailingSlash: 'ignore',
   integrations: [
     sitemap({
       // /gracias es una pagina de paso: no tiene nada que indexar.
-      filter: (pagina) => !pagina.includes('/gracias'),
+      // /estilo es la guia visual interna del sitio.
+      filter: (pagina) => !pagina.includes('/gracias') && !pagina.includes('/estilo'),
     }),
   ],
   vite: {

@@ -96,6 +96,9 @@ llegue a leer.
 
 ### 2.2 Fotos — ya hay, pero provisorias
 
+> La lista completa de fotos a pedir, **ordenada por impacto** y con encuadre,
+> orientación y medidas, está en [`public/img/README.md`](public/img/README.md).
+
 Las 8 imágenes del sitio salen del propio Instagram del local
 (@rotiserialaplaza.mp), o sea son del comercio. Ya no hay placeholders.
 
@@ -154,8 +157,9 @@ las variables de entorno del proyecto.
 
 ### 3.2 Crédito del desarrollador
 
-En el pie dice `TODO: tu nombre acá` con un link a `#`. Está en
-`src/components/Footer.astro`.
+Se sacó del pie hasta tener el nombre y el link: no queda bien un `TODO` a la
+vista en el sitio publicado. Para volver a ponerlo, en
+`src/components/Footer.astro` está comentada la línea exacta.
 
 ### 3.3 Coordenadas del local
 
@@ -189,13 +193,13 @@ Ninguna de estas frenó el desarrollo, pero conviene que alguien las confirme.
    `"datosEnCarga": false` en `negocio.json`. Apagarlo recién cuando estén
    cargados los precios y el menú.
 
-3. **El puntaje de Google (4,3 sobre 35 opiniones) se muestra en el hero con la
-   fuente a la vista**, pero **no** se declara como `aggregateRating` en los
+3. **El puntaje de Google (4,3 sobre 35 opiniones) se muestra en "Dónde
+   estamos", al lado de la dirección y con la fuente a la vista**, pero **no** se declara como `aggregateRating` en los
    datos estructurados. Las guías de Google no aceptan que un negocio publique
    en su propio sitio el puntaje que le puso otra plataforma, y puede costar una
    penalización manual.
 
-4. **Los chips de categorías de la carta son enlaces, no pestañas.** Navegan sin
+4. **Las pestañas de categorías de la carta son enlaces, no `role="tab"`.** Navegan sin
    recargar, funcionan sin JavaScript y ya traen navegación por teclado del
    navegador. Se descartó el patrón `role="tab"`, que había que reimplementar
    entero a mano y se rompe sin JS.
@@ -209,6 +213,7 @@ Ninguna de estas frenó el desarrollo, pero conviene que alguien las confirme.
 
 7. **El menú del día resalta "hoy" desde el navegador, no desde el build.** Un
    sitio compilado un lunes mostraría "lunes" toda la semana si no fuera así.
+   Se resuelve antes de dibujar (script en el `<head>`), así no hay salto.
 
 8. **Tres textos de la sección "Por qué La Plaza" los redacté yo** a partir de
    lo que el local ya comunica (todo al horno, cocina casera, menú distinto cada
@@ -216,6 +221,32 @@ Ninguna de estas frenó el desarrollo, pero conviene que alguien las confirme.
    clientes: nada de eso está confirmado. Están en
    `src/components/PorQue.astro` por si los quieren reescribir con las palabras
    del local.
+
+---
+
+## 4b. Decisiones del rediseño visual (octubre 2026)
+
+El porqué de cada una está en [`DISENO.md`](DISENO.md).
+
+1. **El hero ES el menú del día.** Lo primero que se ve es el plato de hoy en
+   grande. Si hoy no hay menú cargado dice "¿Qué hay hoy?" y lleva a
+   preguntar por WhatsApp; los domingos dice "Hoy descansamos".
+2. **La foto de arriba es siempre la misma** (la milanesa con fideos) y lleva
+   la etiqueta "De nuestra cocina", para que no parezca el plato del día.
+   Cuando haya una foto por plato se puede pensar en mostrarla según el día.
+3. **"Pedir este menú" en el hero agrega el menú y abre el pedido directo.**
+   Es el camino más corto a WhatsApp. En la carta y en la semana, el botón +
+   solo agrega (la gente suele pedir varias cosas).
+4. **Mientras la carta no tenga ningún precio, no se repite "Consultar" en
+   cada plato**: hay un solo aviso arriba. Apenas se carga un precio, aparece
+   la columna de precios.
+5. **El puntaje de Google pasó del hero a "Dónde estamos"**, junto al botón
+   "Cómo llegar": el hero quedó para el plato.
+6. **La página `/estilo`** (guía visual) está publicada pero no va al buscador.
+   Se puede borrar antes de entregar si no la quieren.
+7. **Los textos de los estados vacíos y del domingo los redacté yo**, con los
+   datos que ya estaban (horarios, delivery con radio limitado). Están en
+   `src/components/Hero.astro` y `MenuDelDia.astro`.
 
 ---
 

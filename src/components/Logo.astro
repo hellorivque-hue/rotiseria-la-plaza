@@ -1,35 +1,27 @@
 ---
 /**
- * Lockup tipografico del local.
+ * Lockup tipografico del local: "La Plaza" en Sansita.
  *
  * No usamos el logo actual del comercio porque tiene impresa la direccion
  * vieja ("Brown 402"). Cuando manden el logo sin ese bloque, se reemplaza este
  * componente por la imagen. Ver PENDIENTES.md
  */
 interface Props {
-  /** "chico" para el header, "grande" para el hero. */
+  /** "chico" para el header, "grande" para el pie. */
   tamano?: 'chico' | 'grande';
-  /** Color del texto: sobre fondo claro u oscuro. */
-  sobre?: 'claro' | 'oscuro';
   class?: string;
 }
 
-const { tamano = 'chico', sobre = 'claro', class: clase = '' } = Astro.props;
-
-const esGrande = tamano === 'grande';
-const colorPrincipal = sobre === 'claro' ? 'text-ladrillo' : 'text-crema';
-const colorSecundario = sobre === 'claro' ? 'text-tinta-suave' : 'text-mostaza';
+const { tamano = 'chico', class: clase = '' } = Astro.props;
 ---
 
-<span class={`flex flex-col leading-none ${clase}`}>
-  <span
-    class={`font-sans font-semibold uppercase tracking-[0.22em] ${colorSecundario} ${
-      esGrande ? 'text-xs sm:text-sm' : 'text-[0.55rem]'
-    }`}>Rotisería</span
-  >
-  <span
-    class={`font-display font-extrabold ${colorPrincipal} ${
-      esGrande ? 'text-4xl sm:text-5xl' : 'text-xl'
-    }`}>La Plaza</span
-  >
-</span>
+{
+  tamano === 'chico' ? (
+    <span class={`cartel text-[1.625rem] leading-none ${clase}`}>La Plaza</span>
+  ) : (
+    <span class={`flex flex-col ${clase}`}>
+      <span class="rotulo">Rotisería</span>
+      <span class="cartel text-titulo-1">La Plaza</span>
+    </span>
+  )
+}

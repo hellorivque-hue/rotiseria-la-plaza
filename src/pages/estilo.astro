@@ -1,0 +1,517 @@
+---
+/**
+ * /estilo — guia visual del sitio.
+ *
+ * Muestra todos los tokens y componentes base del sistema, en vivo. No va al
+ * buscador (noindex, fuera del sitemap y bloqueada en robots.txt). Sirve para
+ * que quien siga el proyecto vea las piezas antes de inventar otras.
+ */
+import '../styles/global.css';
+import { Image } from 'astro:assets';
+import Sello from '../components/Sello.astro';
+import { contraste, nivel } from '../lib/contraste';
+import heroPlato from '../assets/hero-plato.jpg';
+import post1 from '../assets/instagram/post-1.jpg';
+import post2 from '../assets/instagram/post-2.jpg';
+import post3 from '../assets/instagram/post-3.jpg';
+import post4 from '../assets/instagram/post-4.jpg';
+import post6 from '../assets/instagram/post-6.jpg';
+
+const colores = [
+  { token: 'crema', hex: '#fbf4e6', rol: 'Fondo base. El papel del sitio.', texto: 'tinta' },
+  { token: 'papel', hex: '#f1e4cc', rol: 'Fondo alternativo, papel de envolver. Para cambiar de densidad.', texto: 'tinta' },
+  { token: 'tinta', hex: '#1c1411', rol: 'Texto. Y fondo de los bloques oscuros (pie, carrito).', texto: 'crema' },
+  { token: 'tinta-suave', hex: '#5b4a40', rol: 'Texto secundario. Nunca para algo que haya que leer sí o sí.', texto: 'crema' },
+  { token: 'ladrillo', hex: '#a21b12', rol: 'La marca. Bloques a sangre, botón principal, sellos.', texto: 'crema' },
+  { token: 'ladrillo-hondo', hex: '#7a130c', rol: 'Solo hover y presionado del ladrillo.', texto: 'crema' },
+  { token: 'perejil', hex: '#2f5a3a', rol: 'El acento. Abierto, "consultar", detalles. Nunca sobre ladrillo.', texto: 'crema' },
+];
+
+const hex = Object.fromEntries(colores.map((c) => [c.token, c.hex]));
+
+const pares: [string, string, string][] = [
+  ['tinta', 'crema', 'Texto de lectura'],
+  ['tinta', 'papel', 'Texto sobre papel'],
+  ['tinta-suave', 'crema', 'Secundario'],
+  ['tinta-suave', 'papel', 'Secundario sobre papel'],
+  ['ladrillo', 'crema', 'Títulos, links, botón'],
+  ['ladrillo', 'papel', 'Títulos sobre papel'],
+  ['crema', 'ladrillo', 'Texto en bloque rojo'],
+  ['papel', 'ladrillo', 'Secundario en bloque rojo'],
+  ['crema', 'ladrillo-hondo', 'Botón en hover'],
+  ['crema', 'tinta', 'Texto en bloque oscuro'],
+  ['papel', 'tinta', 'Secundario en bloque oscuro'],
+  ['perejil', 'crema', 'Acento sobre crema'],
+  ['perejil', 'papel', 'Acento sobre papel'],
+  ['crema', 'perejil', 'Texto sobre acento'],
+].map(([a, b, uso]) => [a!, b!, uso!]);
+
+const medidos = pares.map(([texto, fondo, uso]) => {
+  const r = contraste(hex[texto]!, hex[fondo]!);
+  return { texto, fondo, uso, ratio: r.toFixed(2), nivel: nivel(r) };
+});
+
+const escala = [
+  { token: 'text-cartel', px: '52 → 136', muestra: 'Milanesa napolitana', clase: 'cartel text-cartel', uso: 'Solo el plato del día. Una vez por página.' },
+  { token: 'text-titulo-1', px: '44 → 80', muestra: 'La carta', clase: 'cartel text-titulo-1', uso: 'Título de sección principal.' },
+  { token: 'text-titulo-2', px: '32 → 56', muestra: 'Delivery y horarios', clase: 'cartel text-titulo-2', uso: 'Títulos de sección secundaria.' },
+  { token: 'text-titulo-3', px: '22 → 28', muestra: 'Milanesas', clase: 'subtitulo', uso: 'Categorías, subtítulos. Archivo, no Sansita.' },
+  { token: 'text-lead', px: '19 → 22', muestra: 'Comida casera hecha al horno, con un menú distinto cada día.', clase: 'font-texto text-lead', uso: 'Bajada de títulos. Máximo dos líneas.' },
+  { token: 'text-base', px: '17', muestra: 'Tenemos delivery propio, pero llegamos hasta cierto radio. Escribinos por WhatsApp con tu dirección y te confirmamos.', clase: 'font-texto text-base', uso: 'Texto de lectura.' },
+  { token: 'text-chico', px: '14', muestra: 'Precios sujetos a cambio: confirmalos al hacer el pedido.', clase: 'font-texto text-chico text-tinta-suave', uso: 'Aclaraciones. Nunca para información clave.' },
+  { token: 'rotulo', px: '13', muestra: 'Hoy miércoles · Todo al horno', clase: 'rotulo', uso: 'Rótulos, categorías, estados. Condensada, mayúsculas.' },
+];
+
+const espacios = [
+  { token: 'denso', valor: '32 → 56 px', uso: 'Entre bloques de la misma sección y en secciones de datos (horarios).' },
+  { token: 'seccion', valor: '56 → 104 px', uso: 'El ritmo normal entre secciones.' },
+  { token: 'aire', valor: '80 → 160 px', uso: 'Una o dos veces en la página: antes de algo que tiene que respirar.' },
+  { token: 'gutter', valor: '16 → 40 px', uso: 'Margen lateral. A 390px son 16px: el contenido usa el ancho.' },
+];
+
+const filas = [
+  { nombre: 'Milanesa de ternera napolitana', detalle: null, precio: null },
+  { nombre: 'Costillas de cerdo', detalle: '2 unidades', precio: null },
+  { nombre: 'Tarta de calabaza y mozzarella', detalle: 'Entera, media o porción', precio: null },
+];
+---
+
+<!doctype html>
+<html lang="es-AR" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sistema visual · Rotisería La Plaza</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/archivo-latin-variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/sansita-black-italic-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <script is:inline>
+      document.documentElement.classList.replace('no-js', 'js');
+    </script>
+    <style>
+      body {
+        font-family: var(--font-texto);
+        font-size: var(--text-base);
+        line-height: var(--text-base--line-height);
+      }
+      .demo-foco {
+        outline: 3px solid var(--anillo, var(--color-tinta));
+        outline-offset: 3px;
+      }
+      .indice a {
+        display: inline-flex;
+        min-height: 2.75rem;
+        align-items: center;
+        padding-inline: 0.75rem;
+        white-space: nowrap;
+      }
+      .indice a:hover {
+        text-decoration: underline;
+        text-underline-offset: 4px;
+      }
+    </style>
+  </head>
+
+  <body class="sup-crema">
+    <header class="sup-tinta sticky top-0 z-40">
+      <div class="mx-auto flex max-w-6xl items-center gap-4 px-gutter">
+        <p class="cartel shrink-0 py-2 text-xl">La Plaza</p>
+        <nav aria-label="Secciones de la guía" class="indice sin-barra -mr-3 overflow-x-auto">
+          <ul class="rotulo flex">
+            <li><a href="#color">Color</a></li>
+            <li><a href="#tipografia">Tipografía</a></li>
+            <li><a href="#ritmo">Ritmo</a></li>
+            <li><a href="#forma">Forma</a></li>
+            <li><a href="#sello">Sello</a></li>
+            <li><a href="#fotos">Fotos</a></li>
+            <li><a href="#componentes">Componentes</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <!-- Presentación -->
+      <section class="sup-ladrillo overflow-hidden">
+        <div class="mx-auto grid max-w-6xl gap-8 px-gutter py-seccion md:grid-cols-[1fr_auto] md:items-end">
+          <div>
+            <p class="rotulo text-papel">Sistema visual · v1</p>
+            <h1 class="cartel mt-3 text-titulo-1">Cartel de barrio</h1>
+            <p class="mt-5 max-w-2xl text-lead text-papel">
+              El sitio se ve como la vidriera de una rotisería de toda la vida: letras de
+              cartel pintado, papel de envolver y un sello de goma. Apetitoso antes que
+              elegante. Lo que manda es el plato de hoy.
+            </p>
+            <ol class="mt-8 grid max-w-3xl gap-4 sm:grid-cols-3">
+              <li class="border-t-2 border-papel/40 pt-3">
+                <p class="rotulo">Uno</p>
+                <p class="mt-1 text-chico text-papel">El plato del día es lo más grande de la página. Siempre.</p>
+              </li>
+              <li class="border-t-2 border-papel/40 pt-3">
+                <p class="rotulo">Dos</p>
+                <p class="mt-1 text-chico text-papel">Sansita es la voz y aparece poco. Archivo hace todo el trabajo.</p>
+              </li>
+              <li class="border-t-2 border-papel/40 pt-3">
+                <p class="rotulo">Tres</p>
+                <p class="mt-1 text-chico text-papel">Un solo adorno: el sello. Si hay que decorar más, no se decora.</p>
+              </li>
+            </ol>
+          </div>
+          <Sello class="w-40 justify-self-start text-crema md:w-52" giro={-10} />
+        </div>
+      </section>
+
+      <!-- Color -->
+      <section id="color" class="mx-auto max-w-6xl scroll-mt-16 px-gutter py-seccion">
+        <p class="rotulo text-ladrillo">01 · Color</p>
+        <h2 class="cartel mt-2 text-titulo-2">Siete colores, un rol cada uno</h2>
+        <p class="mt-3 max-w-2xl text-tinta-suave">
+          Salen del logo: rojo ladrillo, negro y crema. El acento es verde perejil: el
+          verde que va arriba de la milanesa, y el de las persianas de los almacenes. No
+          compite con el rojo y no es el amarillo de cadena de comida rápida.
+        </p>
+
+        <ul class="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-control)] border border-tinta/15 bg-tinta/15 sm:grid-cols-4 lg:grid-cols-7">
+          {
+            colores.map((c) => (
+              <li class="flex min-h-44 flex-col justify-end p-3 last:col-span-2 lg:last:col-span-1" style={`background:${c.hex};color:${hex[c.texto]}`}>
+                <p class="rotulo">{c.token}</p>
+                <p class="text-chico tabular-nums">{c.hex}</p>
+                <p class="mt-2 text-[0.8125rem] leading-snug">{c.rol}</p>
+              </li>
+            ))
+          }
+        </ul>
+
+        <h3 class="subtitulo mt-12">Contraste medido</h3>
+        <p class="mt-1 text-chico text-tinta-suave">
+          Calculado en el build con la fórmula de WCAG 2.1 (src/lib/contraste.ts). AA pide 4,5 para texto normal.
+        </p>
+        <div class="mt-4 overflow-x-auto">
+          <table class="w-full text-left text-chico">
+            <thead>
+              <tr class="rotulo border-b-2 border-tinta">
+                <th scope="col" class="py-2 pr-4">Muestra</th>
+                <th scope="col" class="py-2 pr-4">Texto / fondo</th>
+                <th scope="col" class="py-2 pr-4">Uso</th>
+                <th scope="col" class="py-2 pr-4 text-right">Ratio</th>
+                <th scope="col" class="py-2 text-right">Nivel</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                medidos.map((m) => (
+                  <tr class="border-b border-tinta/15">
+                    <td class="py-2 pr-4">
+                      <span class="inline-block rounded-[var(--radius-sello)] px-2 py-0.5 font-bold" style={`color:${hex[m.texto]};background:${hex[m.fondo]}`}>
+                        Aa
+                      </span>
+                    </td>
+                    <td class="py-2 pr-4 whitespace-nowrap">{m.texto} / {m.fondo}</td>
+                    <td class="py-2 pr-4">{m.uso}</td>
+                    <td class="py-2 pr-4 text-right tabular-nums">{m.ratio}</td>
+                    <td class="py-2 text-right font-bold whitespace-nowrap">{m.nivel}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Tipografía -->
+      <section id="tipografia" class="sup-papel scroll-mt-16">
+        <div class="mx-auto max-w-6xl px-gutter py-seccion">
+          <p class="rotulo text-ladrillo">02 · Tipografía</p>
+          <h2 class="cartel mt-2 text-titulo-2">Dos familias, roles que no se pisan</h2>
+
+          <div class="mt-8 grid gap-8 md:grid-cols-2">
+            <div class="border-t-2 border-tinta pt-4">
+              <p class="cartel text-titulo-1 text-ladrillo">Sansita</p>
+              <p class="rotulo mt-2">Black Itálica · 22 KB · la voz</p>
+              <p class="mt-3">
+                Tiene el pulso de las letras pintadas a pincel de los carteles de comercio:
+                en negra itálica, el nombre de un plato da hambre. Solo para títulos y
+                nombres de platos, nunca en párrafos.
+              </p>
+            </div>
+            <div class="border-t-2 border-tinta pt-4">
+              <p class="text-titulo-1 leading-[0.95] font-black [font-stretch:62%]">ARCHIVO</p>
+              <p class="rotulo mt-2">Variable, peso y ancho · 54 KB · el trabajo</p>
+              <p class="mt-3">
+                Grotesca de diario con eje de ancho: condensada sirve de rótulo y de precio,
+                como en una etiqueta de rotisería; a ancho normal, se lee bien en el
+                celular. Un solo archivo para las dos cosas.
+              </p>
+            </div>
+          </div>
+
+          <h3 class="subtitulo mt-14">Escala</h3>
+          <p class="mt-1 text-chico text-tinta-suave">
+            Fluida entre 390 y 1440 px de pantalla. Los saltos son desparejos a propósito: el
+            cartel le saca mucha ventaja a todo lo demás.
+          </p>
+          <ul class="mt-6">
+            {
+              escala.map((e) => (
+                <li class="grid gap-x-8 gap-y-2 border-t border-tinta/20 py-5 md:grid-cols-[12rem_1fr]">
+                  <div>
+                    <p class="rotulo">{e.token}</p>
+                    <p class="text-chico text-tinta-suave">{e.px} px</p>
+                    <p class="mt-1 text-chico text-tinta-suave">{e.uso}</p>
+                  </div>
+                  <p class={`${e.clase} min-w-0 break-words`}>{e.muestra}</p>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </section>
+
+      <!-- Ritmo -->
+      <section id="ritmo" class="mx-auto max-w-6xl scroll-mt-16 px-gutter py-seccion">
+        <p class="rotulo text-ladrillo">03 · Ritmo</p>
+        <h2 class="cartel mt-2 text-titulo-2">Tres densidades, no un py-20 para todo</h2>
+        <p class="mt-3 max-w-2xl text-tinta-suave">
+          Las secciones alternan densidad y superficie: un bloque rojo a sangre, una lista
+          apretada sobre papel, un respiro sobre crema. El espaciado interno sigue la escala
+          de Tailwind (4 px).
+        </p>
+        <ul class="mt-8 flex flex-col gap-5">
+          {
+            espacios.map((s) => (
+              <li class="grid items-center gap-x-6 gap-y-2 sm:grid-cols-[10rem_1fr]">
+                <div>
+                  <p class="rotulo">{s.token}</p>
+                  <p class="text-chico text-tinta-suave">{s.valor}</p>
+                </div>
+                <div>
+                  <div class="h-5 bg-ladrillo" style={`width: var(--spacing-${s.token})`} />
+                  <p class="mt-1 text-chico">{s.uso}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <!-- Forma -->
+      <section id="forma" class="sup-tinta scroll-mt-16">
+        <div class="mx-auto max-w-6xl px-gutter py-denso">
+          <p class="rotulo text-papel">04 · Forma</p>
+          <h2 class="cartel mt-2 text-titulo-2">Casi recto, como lo impreso</h2>
+          <div class="mt-8 grid gap-6 sm:grid-cols-4">
+            <div>
+              <div class="h-20 rounded-[var(--radius-sello)] border-2 border-crema"></div>
+              <p class="rotulo mt-2">radius-sello · 2px</p>
+              <p class="text-chico text-papel">Sellos y etiquetas.</p>
+            </div>
+            <div>
+              <div class="h-20 rounded-[var(--radius-control)] bg-crema"></div>
+              <p class="rotulo mt-2">radius-control · 6px</p>
+              <p class="text-chico text-papel">Botones y campos.</p>
+            </div>
+            <div>
+              <div class="h-20 rounded-[var(--radius-foto)] bg-papel"></div>
+              <p class="rotulo mt-2">radius-foto · 3px</p>
+              <p class="text-chico text-papel">Fotos. A sangre, 0.</p>
+            </div>
+            <div>
+              <div class="h-20 rounded-[var(--radius-control)] bg-crema shadow-[var(--shadow-flota)]"></div>
+              <p class="rotulo mt-2">shadow-flota</p>
+              <p class="text-chico text-papel">La única sombra. Solo para el carrito.</p>
+            </div>
+          </div>
+          <p class="mt-6 max-w-2xl text-chico text-papel">
+            No hay pastillas ni tarjetas con sombra. Lo que agrupa es una línea (filete) o un
+            cambio de fondo, como en una carta impresa.
+          </p>
+        </div>
+      </section>
+
+      <!-- Sello -->
+      <section id="sello" class="mx-auto max-w-6xl scroll-mt-16 px-gutter py-seccion">
+        <p class="rotulo text-ladrillo">05 · El sello</p>
+        <h2 class="cartel mt-2 text-titulo-2">El único adorno</h2>
+        <p class="mt-3 max-w-2xl text-tinta-suave">
+          Un sello de goma, con la tinta despareja de cuando no apoya bien. Lleva la
+          dirección correcta, Brown 406. Aparece en cuatro lugares y en ninguno más: el sello
+          del inicio, HOY en el menú del día, CERRADO en el carrito, y la 404.
+        </p>
+        <div class="mt-10 grid items-center gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="flex flex-col items-start gap-3">
+            <Sello class="w-40" />
+            <p class="rotulo text-tinta-suave">Redondo · sobre crema</p>
+          </div>
+          <div class="flex flex-col items-start gap-3">
+            <div class="sup-ladrillo rounded-[var(--radius-foto)] p-5">
+              <Sello class="w-32 text-crema" giro={6} />
+            </div>
+            <p class="rotulo text-tinta-suave">Redondo · sobre ladrillo</p>
+          </div>
+          <div class="flex flex-col items-start gap-6">
+            <span class="sello sello-rect text-[2.75rem]">Hoy</span>
+            <span class="sello sello-rect text-[1.75rem] text-tinta" style="--giro: 4deg">Cerrado</span>
+            <p class="rotulo text-tinta-suave">Rectangular · estados</p>
+          </div>
+          <div class="flex flex-col items-start gap-3">
+            <span class="sello sello-rect text-[2.25rem]" style="--giro: -12deg">Agotado</span>
+            <p class="rotulo mt-4 text-tinta-suave">La 404: "esta página se agotó"</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Fotos -->
+      <section id="fotos" class="sup-papel scroll-mt-16">
+        <div class="mx-auto max-w-6xl px-gutter py-seccion">
+          <p class="rotulo text-ladrillo">06 · Fotos</p>
+          <h2 class="cartel mt-2 text-titulo-2">Diseñar para las fotos que hay</h2>
+          <p class="mt-3 max-w-2xl text-tinta-suave">
+            Son capturas del Instagram del local: chicas, de luz despareja, algunas de
+            stories. Tres reglas: un solo tratamiento de color para todas, recortes
+            apretados (el plato, no la mesa) y nunca una foto más grande de lo que
+            aguanta.
+          </p>
+
+          <h3 class="subtitulo mt-10">Tratamiento</h3>
+          <p class="mt-1 text-chico text-tinta-suave">
+            Clase <code>.foto</code>: un poco más de saturación y contraste, y calidez. Arriba
+            sin tratar, abajo tratadas. Las tres vienen de luces distintas y abajo parecen de
+            la misma cocina.
+          </p>
+          <div class="mt-5 grid max-w-3xl grid-cols-3 gap-2 sm:gap-4">
+            {
+              [post1, post2, post6].map((f) => (
+                <div class="flex flex-col gap-2 sm:gap-4">
+                  <Image src={f} alt="" widths={[200, 400]} sizes="(min-width: 1024px) 360px, 30vw" class="aspect-square w-full rounded-[var(--radius-foto)] object-cover" />
+                  <Image src={f} alt="" widths={[200, 400]} sizes="(min-width: 1024px) 360px, 30vw" class="foto aspect-square w-full" />
+                </div>
+              ))
+            }
+          </div>
+
+          <h3 class="subtitulo mt-12">Recortes</h3>
+          <p class="mt-1 text-chico text-tinta-suave">
+            Proporciones que no dependen de una foto apaisada perfecta. Con las de 640 px no
+            se pasa de unos 320 px de ancho en pantalla.
+          </p>
+          <div class="mt-5 grid grid-cols-6 gap-2 sm:gap-4">
+            <figure class="col-span-3 sm:col-span-2">
+              <Image src={heroPlato} alt="" widths={[300, 600]} sizes="(min-width: 640px) 33vw, 50vw" class="foto aspect-[4/5] w-full object-[40%_50%]" />
+              <figcaption class="rotulo mt-2">4:5 · el plato del día</figcaption>
+            </figure>
+            <figure class="col-span-3 sm:col-span-2">
+              <Image src={post3} alt="" widths={[300, 600]} sizes="(min-width: 640px) 33vw, 50vw" class="foto aspect-square w-full" />
+              <figcaption class="rotulo mt-2">1:1 · textura, de cerca</figcaption>
+            </figure>
+            <figure class="col-span-6 sm:col-span-2">
+              <Image src={post4} alt="" widths={[300, 600]} sizes="(min-width: 640px) 33vw, 100vw" class="foto aspect-[3/2] w-full object-[50%_40%]" />
+              <figcaption class="rotulo mt-2">3:2 · recorte de detalle, no plano general</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- Componentes -->
+      <section id="componentes" class="mx-auto max-w-6xl scroll-mt-16 px-gutter py-seccion">
+        <p class="rotulo text-ladrillo">07 · Componentes</p>
+        <h2 class="cartel mt-2 text-titulo-2">Piezas base</h2>
+
+        <h3 class="subtitulo mt-10">Botones</h3>
+        <p class="mt-1 text-chico text-tinta-suave">52 px de alto (44 el chico). El de WhatsApp es el principal: no hace falta el verde de WhatsApp para que se entienda.</p>
+        <div class="mt-5 flex flex-wrap items-center gap-3">
+          <a href="#componentes" class="btn btn-ladrillo">
+            <svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.6 2 2.17 6.43 2.17 11.87c0 1.74.46 3.44 1.32 4.94L2 22l5.35-1.4a9.83 9.83 0 0 0 4.69 1.19h.01c5.44 0 9.87-4.43 9.87-9.87S17.48 2 12.04 2Zm5.43 12.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.65-2.05-.17-.3-.02-.46.13-.6.14-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.38-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35Z"></path></svg>
+            Pedir por WhatsApp
+          </a>
+          <button type="button" class="btn btn-ladrillo !bg-ladrillo-hondo">Hover</button>
+          <button type="button" class="btn btn-ladrillo demo-foco">Foco</button>
+          <button type="button" class="btn btn-ladrillo" disabled>Deshabilitado</button>
+          <button type="button" class="btn btn-linea">Ver la carta</button>
+          <button type="button" class="btn btn-linea btn-chico">Agregar</button>
+        </div>
+        <div class="sup-ladrillo mt-4 flex flex-wrap items-center gap-3 rounded-[var(--radius-foto)] p-5">
+          <button type="button" class="btn btn-crema">Pedir este menú</button>
+          <button type="button" class="btn btn-crema demo-foco">Foco sobre rojo</button>
+          <button type="button" class="btn btn-linea">Ver la semana</button>
+        </div>
+
+        <div class="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-2 [&>*]:min-w-0">
+          <div>
+            <h3 class="subtitulo">Fila de carta</h3>
+            <p class="mt-1 text-chico text-tinta-suave">Reemplaza a las 79 tarjetas iguales. Se lee como una carta impresa: nombre, línea de puntos, precio. El + es <code>.btn-agregar</code>: callado (borde suave) porque son muchos uno abajo del otro.</p>
+            <ul class="mt-5 border-t-2 border-tinta">
+              {
+                filas.map((f) => (
+                  <li class="flex items-center gap-3 border-b border-tinta/15 py-3">
+                    <div class="min-w-0 grow">
+                      <div class="flex items-end gap-2">
+                        <p class="font-semibold">{f.nombre}</p>
+                        <span class="guia" aria-hidden="true" />
+                        <p class="rotulo shrink-0 text-perejil">Consultar</p>
+                      </div>
+                      {f.detalle && <p class="text-chico text-tinta-suave">{f.detalle}</p>}
+                    </div>
+                    <button type="button" class="btn-agregar" aria-label={`Agregar ${f.nombre}`} />
+                  </li>
+                ))
+              }
+            </ul>
+            <p class="mt-3 text-chico text-tinta-suave">
+              Con precio cargado se ve así: <span class="rotulo text-tinta tabular-nums">$ 00.000</span> (formato, no un precio real).
+            </p>
+          </div>
+
+          <div>
+            <h3 class="subtitulo">Categorías</h3>
+            <p class="mt-1 text-chico text-tinta-suave">Pestañas condensadas, no pastillas. 44 px de alto.</p>
+            <ul class="rotulo sin-barra mt-5 flex overflow-x-auto border-b-2 border-tinta/15">
+              <li><a href="#componentes" class="-mb-0.5 inline-flex min-h-11 items-center border-b-[3px] border-ladrillo px-3 text-ladrillo" aria-current="true">Milanesas</a></li>
+              <li><a href="#componentes" class="-mb-0.5 inline-flex min-h-11 items-center border-b-[3px] border-transparent px-3 hover:border-tinta/40">Pizzas</a></li>
+              <li><a href="#componentes" class="-mb-0.5 inline-flex min-h-11 items-center border-b-[3px] border-transparent px-3 hover:border-tinta/40">Tartas</a></li>
+              <li><a href="#componentes" class="-mb-0.5 inline-flex min-h-11 items-center border-b-[3px] border-transparent px-3 hover:border-tinta/40">Empanadas</a></li>
+              <li><a href="#componentes" class="-mb-0.5 inline-flex min-h-11 items-center border-b-[3px] border-transparent px-3 hover:border-tinta/40">Pastas</a></li>
+            </ul>
+
+            <h3 class="subtitulo mt-10">Estado del local</h3>
+            <div class="mt-4 flex flex-col items-start gap-3">
+              <p class="rotulo inline-flex items-center gap-2"><span class="size-2.5 rounded-full bg-perejil" aria-hidden="true"></span>Abierto · cierra 14:00</p>
+              <p class="rotulo inline-flex items-center gap-2"><span class="size-2.5 rounded-full border-2 border-ladrillo" aria-hidden="true"></span>Cerrado · abre mañana 11:00</p>
+            </div>
+
+            <h3 class="subtitulo mt-10">Campos</h3>
+            <div class="mt-4 flex flex-col gap-4">
+              <div>
+                <label for="demo-nombre" class="block font-semibold">Tu nombre</label>
+                <input id="demo-nombre" class="campo mt-1" placeholder="Ana" />
+              </div>
+              <div>
+                <label for="demo-dir" class="block font-semibold">Dirección de entrega</label>
+                <input id="demo-dir" class="campo mt-1" aria-invalid="true" aria-describedby="demo-dir-error" />
+                <p id="demo-dir-error" class="mt-1 text-chico font-semibold text-ladrillo">Necesitamos la dirección para llevarte el pedido.</p>
+              </div>
+              <fieldset>
+                <legend class="font-semibold">¿Cómo lo recibís?</legend>
+                <div class="mt-2 grid grid-cols-2 overflow-hidden rounded-[var(--radius-control)] border-2 border-tinta">
+                  <label class="flex min-h-12 cursor-pointer items-center justify-center bg-tinta px-3 font-semibold text-crema">
+                    <input type="radio" name="demo-mod" class="sr-only" checked />Envío
+                  </label>
+                  <label class="flex min-h-12 cursor-pointer items-center justify-center px-3 font-semibold">
+                    <input type="radio" name="demo-mod" class="sr-only" />Retiro
+                  </label>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="sup-tinta">
+      <p class="mx-auto max-w-6xl px-gutter py-6 text-chico text-papel">
+        Guía interna de Rotisería La Plaza. Tokens en src/styles/global.css · reglas en DISENO.md
+      </p>
+    </footer>
+  </body>
+</html>

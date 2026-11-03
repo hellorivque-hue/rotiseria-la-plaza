@@ -1,9 +1,10 @@
 ---
 /**
  * 404. Con humor de rotiseria, pero util: el objetivo sigue siendo que lleguen
- * al menu o al WhatsApp.
+ * al menu o al WhatsApp. Es uno de los cuatro lugares donde va el sello.
  */
 import Base from '../layouts/Base.astro';
+import IconoWhatsApp from '../components/IconoWhatsApp.astro';
 import { negocio, linkWhatsApp } from '../lib/datos';
 ---
 
@@ -12,35 +13,29 @@ import { negocio, linkWhatsApp } from '../lib/datos';
   descripcion="No encontramos esta página. Volvé al menú del día o escribinos por WhatsApp."
   noIndexar
 >
-  <section class="contenedor py-16 sm:py-24">
-    <div class="mx-auto max-w-xl text-center">
-      <p class="font-display text-7xl font-extrabold text-ladrillo sm:text-8xl">404</p>
-
-      <h1 class="titulo-seccion mt-4">Esta página se la comieron</h1>
-
-      <p class="mt-4 text-lg text-tinta-suave">
-        No la encontramos por ningún lado. Debe haber salido del horno y alguien la
-        agarró antes que vos.
+  <section class="caja grid items-center gap-x-10 gap-y-8 py-aire lg:grid-cols-12">
+    <div class="lg:col-span-7">
+      <p class="rotulo text-ladrillo">Error 404</p>
+      <h1 class="cartel mt-3 text-titulo-1">Esta página se la comieron</h1>
+      <p class="mt-5 max-w-xl text-lead text-tinta-suave">
+        No la encontramos por ningún lado. Debe haber salido del horno y alguien la agarró
+        antes que vos.
       </p>
-
-      <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-        <a href="/#menu-del-dia" class="boton boton-primario">Ver el menú de hoy</a>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="/" class="btn btn-ladrillo">Ver el menú de hoy</a>
         <a
           href={linkWhatsApp(`¡Hola ${negocio.nombre}! Quería hacer un pedido.`)}
           target="_blank"
           rel="noopener"
-          class="boton boton-fantasma"
+          class="btn btn-linea"
         >
+          <IconoWhatsApp />
           Pedir por WhatsApp
         </a>
       </div>
-
-      <p class="mt-8 text-tinta-suave">
-        O volvé al <a
-          href="/"
-          class="font-medium text-ladrillo underline underline-offset-4">inicio</a
-        >.
-      </p>
+    </div>
+    <div class="lg:col-span-5 lg:justify-self-center">
+      <span class="sello sello-rect text-[3rem] lg:text-[4.5rem]" style="--giro: -12deg" aria-hidden="true">Agotado</span>
     </div>
   </section>
 </Base>

@@ -224,11 +224,11 @@ separado por una coma, y cambiale los datos. Lo único importante:
 ```
 
 - `descripcion`: una línea corta, o `null`.
-- `recomendado`: `true` le pone la etiqueta amarilla "Recomendado".
+- `recomendado`: `true` le pone arriba del nombre el rótulo rojo "Recomendado".
 - `unidad`: aclaración como `"por docena"` o `"porción"`, o `null`.
 
 Si una categoría se queda sin ningún plato disponible, **la categoría entera
-desaparece sola** de la página y de la barra de chips.
+desaparece sola** de la página y de la barra de pestañas.
 
 ## Cómo pongo y saco promociones
 
@@ -372,7 +372,8 @@ plantillas/      Los CSV para importar a Google Sheets
 .github/         La automatización que lee la planilla cada 20 minutos
 netlify.toml     Build, cacheo y cabeceras para Netlify
   assets/        Fotos que Astro optimiza en el build
-  styles/        global.css: colores, tipografías y componentes base
+  styles/        global.css: los tokens de diseño (colores, tipografías,
+                 espaciado) y los componentes base. Las reglas, en DISENO.md
 public/          Se copia tal cual: fuentes, favicon, imagen para compartir
 scripts/         generar-placeholders.mjs (utilidad de desarrollo)
 ```
@@ -382,15 +383,20 @@ Algunas decisiones que conviene conocer antes de tocar el código:
 - **Los componentes nunca importan los JSON directo**, siempre pasan por
   `src/lib/datos.ts`. Así el tipado se valida en un solo lugar.
 - **El día de hoy se resuelve en el navegador, no en el build.** Un sitio
-  compilado un lunes mostraría "lunes" toda la semana si no fuera así.
+  compilado un lunes mostraría "lunes" toda la semana si no fuera así. Lo
+  resuelve un script chiquito en el `<head>` (antes de dibujar nada) y el CSS
+  muestra el plato que corresponde: no hay salto al cargar.
 - **El panel del carrito es un `<dialog>` nativo** abierto con `showModal()`: el
   navegador ya se ocupa del foco atrapado, del Escape y de dejar inerte el
   fondo.
-- **Los chips de la carta son enlaces `<a href="#...">`**, no pestañas de
+- **Las pestañas de la carta son enlaces `<a href="#...">`**, no pestañas de
   JavaScript. Navegan sin recargar y funcionan sin JS.
-- **Las fuentes están self-hosted**, solo el subconjunto latino (82 KB entre
-  las dos), con fuentes de respaldo de métricas ajustadas para que el texto no
-  salte mientras cargan.
+- **Las fuentes están self-hosted y recortadas** (Sansita + Archivo, 76 KB
+  entre las dos), con fuentes de respaldo de métricas ajustadas para que el
+  texto no salte mientras cargan.
+- **El diseño tiene reglas escritas** en [`DISENO.md`](DISENO.md) y una guía
+  visual en vivo en `/estilo`. Leelas antes de agregar colores, fuentes o
+  adornos.
 - **Escribir en el carrito no repinta la lista.** Si repintara, el cursor se
   perdería en medio de la palabra.
 
@@ -400,13 +406,13 @@ Lighthouse 12, emulación mobile, sobre el sitio compilado:
 
 | | |
 |---|---|
-| Performance | **97** |
+| Performance | **97 a 99** (cuatro corridas) |
 | Accesibilidad | **100** |
 | Buenas prácticas | **100** |
 | SEO | **100** |
-| LCP | 1,8 s |
+| LCP | 2,0 s |
 | CLS | 0 |
-| Bloqueo del hilo principal (TBT) | 110 ms |
+| Bloqueo del hilo principal (TBT) | 20 a 90 ms |
 
 ---
 

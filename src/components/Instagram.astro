@@ -1,12 +1,15 @@
 ---
 /**
- * Grilla de Instagram.
+ * Fotos de Instagram.
  *
  * A proposito NO hay scraping ni APIs no oficiales: se rompen solos y van
  * contra los terminos de Instagram. Las fotos se actualizan a mano, cargando
  * las imagenes en src/assets/instagram/ y editando src/data/instagram.json.
- * Para automatizarlo hace falta cuenta Business + Instagram Graph API con
- * token propio (esta explicado en el README).
+ *
+ * Diseñado para las fotos que hay (ver public/img/README.md): las de buena
+ * resolucion van grandes y las chicas (stories de 640px) nunca pasan de unos
+ * 220px. En el celular son una tira que se desliza; en escritorio, un mosaico
+ * de dos grandes y cuatro chicas. Si no se da esa combinacion, grilla pareja.
  */
 import { Image } from 'astro:assets';
 import { instagram, negocio } from '../lib/datos';
@@ -23,68 +26,79 @@ const posts = instagram
     fuente: archivos[`../assets/instagram/${post.imagen}`]?.default,
   }))
   .filter((post) => Boolean(post.fuente));
+
+const grandes = posts.filter((p) => p.fuente!.width >= 1000);
+const chicas = posts.filter((p) => p.fuente!.width < 1000);
+const mosaico = grandes.length === 2 && chicas.length === 4;
+// Orden del mosaico: grande, cuatro chicas, grande.
+const orden = mosaico ? [grandes[0]!, ...chicas, grandes[1]!] : posts;
 ---
 
 {
   posts.length > 0 && (
-    <section id="instagram" class="scroll-mt-20 py-12 sm:py-16">
-      <div class="contenedor">
-        <header class="flex flex-wrap items-end justify-between gap-4">
-          <div class="max-w-xl">
-            <p class="text-sm font-bold tracking-[0.2em] text-ladrillo uppercase">
-              Lo que sale del horno
-            </p>
-            <h2 class="titulo-seccion mt-2">Seguinos en Instagram</h2>
-            <p class="mt-3 text-lg text-tinta-suave">
-              Ahí publicamos el menú del día y lo que va saliendo.
-            </p>
-          </div>
+    <section id="instagram" class="py-seccion">
+      <header class="caja flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+        <div>
+          <p class="rotulo text-ladrillo">Lo que sale del horno</p>
+          <h2 class="cartel mt-2 text-titulo-1">En Instagram</h2>
+        </div>
+        <a
+          href={negocio.redes.instagram.url}
+          target="_blank"
+          rel="noopener me"
+          class="btn btn-linea"
+        >
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5" />
+            <circle cx="12" cy="12" r="4.2" />
+            <circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none" />
+          </svg>
+          {negocio.redes.instagram.usuario}
+        </a>
+      </header>
 
-          <a
-            href={negocio.redes.instagram.url}
-            target="_blank"
-            rel="noopener me"
-            class="boton boton-secundario w-full sm:w-auto"
-          >
-            <svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 2.2c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.8 3.8 0 0 1-1.38-.9 3.8 3.8 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.21 15.58 2.2 15.2 2.2 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.21 8.8 2.2 12 2.2Zm0 1.8c-3.14 0-3.5.01-4.74.07-.9.04-1.38.19-1.7.31-.43.17-.73.37-1.05.69-.32.32-.52.62-.69 1.05-.12.32-.27.8-.31 1.7-.06 1.24-.07 1.6-.07 4.74s.01 3.5.07 4.74c.04.9.19 1.38.31 1.7.17.43.37.73.69 1.05.32.32.62.52 1.05.69.32.12.8.27 1.7.31 1.24.06 1.6.07 4.74.07s3.5-.01 4.74-.07c.9-.04 1.38-.19 1.7-.31.43-.17.73-.37 1.05-.69.32-.32.52-.62.69-1.05.12-.32.27-.8.31-1.7.06-1.24.07-1.6.07-4.74s-.01-3.5-.07-4.74c-.04-.9-.19-1.38-.31-1.7a2.8 2.8 0 0 0-.69-1.05 2.8 2.8 0 0 0-1.05-.69c-.32-.12-.8-.27-1.7-.31C15.5 4.01 15.14 4 12 4Zm0 3.06a4.94 4.94 0 1 1 0 9.88 4.94 4.94 0 0 1 0-9.88Zm0 8.15a3.21 3.21 0 1 0 0-6.42 3.21 3.21 0 0 0 0 6.42Zm6.29-8.35a1.15 1.15 0 1 1-2.3 0 1.15 1.15 0 0 1 2.3 0Z" />
-            </svg>
-            {negocio.redes.instagram.usuario}
-          </a>
-        </header>
-
-        <ul class="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4">
-          {posts.map((post) => {
-            const destino = post.url ?? negocio.redes.instagram.url;
-
-            return (
-              <li>
-                <a
-                  href={destino}
-                  target="_blank"
-                  rel="noopener"
-                  class="group block overflow-hidden rounded-xl border border-crema-borde"
-                >
-                  <Image
-                    src={post.fuente!}
-                    alt={post.alt}
-                    widths={[240, 400, 600]}
-                    sizes="(min-width: 640px) 320px, 45vw"
-                    loading="lazy"
-                    decoding="async"
-                    class="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  {post.caption && (
-                    <p class="line-clamp-2 px-3 py-2 text-sm text-tinta-suave">
-                      {post.caption}
-                    </p>
-                  )}
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+      <ul
+        class:list={[
+          'caja mt-8 flex snap-x snap-mandatory scroll-px-gutter gap-2 overflow-x-auto pb-2 sin-barra sm:gap-3 lg:grid lg:overflow-visible lg:pb-0',
+          // grid-flow-col: la grande ocupa dos columnas y dos filas, las cuatro chicas
+          // se acomodan en un cuadrado de 2x2 al lado, y la otra grande cierra.
+          mosaico ? 'lg:grid-flow-col lg:grid-cols-6 lg:grid-rows-2' : 'lg:grid-cols-3',
+        ]}
+      >
+        {orden.map((post, i) => {
+          const esGrande = mosaico && (i === 0 || i === orden.length - 1);
+          return (
+            <li
+              class:list={[
+                'w-[68vw] max-w-72 shrink-0 snap-start sm:w-[40vw] lg:w-auto lg:max-w-none',
+                esGrande && 'lg:col-span-2 lg:row-span-2',
+              ]}
+            >
+              <a
+                href={post.url ?? negocio.redes.instagram.url}
+                target="_blank"
+                rel="noopener"
+                class="group block overflow-hidden rounded-[var(--radius-foto)] lg:h-full"
+              >
+                <Image
+                  src={post.fuente!}
+                  alt={post.alt}
+                  widths={esGrande ? [300, 480, 720] : [240, 360, 480]}
+                  sizes={esGrande ? '(min-width: 1024px) 31vw, 68vw' : '(min-width: 1024px) 15vw, 68vw'}
+                  loading="lazy"
+                  decoding="async"
+                  class:list={[
+                    'foto aspect-[4/5] w-full !rounded-none transition-transform duration-300 group-hover:scale-[1.03]',
+                    'lg:aspect-square',
+                    esGrande && 'lg:h-full',
+                  ]}
+                />
+              </a>
+              {post.caption && <p class="mt-2 line-clamp-2 text-chico text-tinta-suave">{post.caption}</p>}
+            </li>
+          );
+        })}
+      </ul>
     </section>
   )
 }

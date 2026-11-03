@@ -1,13 +1,12 @@
 ---
 /**
- * Menu del dia: la seccion estrella.
+ * La semana: el menu de los siete dias, de lunes a domingo, siempre en ese
+ * orden. El renglon de hoy se marca con la variante `hoy:` (ver global.css):
+ * sin JavaScript despues de cargar y sin reordenar nada.
  *
- * Ojo con una trampa tipica: el sitio es estatico, se compila una vez. Si
- * marcaramos "hoy" en el build, un sitio compilado un lunes mostraria "lunes"
- * toda la semana. Por eso se renderizan los siete dias y el navegador decide
- * cual es hoy. Sin JavaScript se ve igual la semana completa, solo que sin el
- * destacado.
+ * Se edita en src/data/menu-del-dia.json (o desde la planilla, ver PUBLICAR.md).
  */
+import Sello from './Sello.astro';
 import { menuSemanal, negocio, linkWhatsApp } from '../lib/datos';
 import { precio } from '../lib/formato';
 import { ORDEN_DIAS } from '../lib/horarios';
@@ -20,174 +19,100 @@ const dias = [...menuSemanal].sort(
   (a, b) => ordenSemana.indexOf(a.dia) - ordenSemana.indexOf(b.dia),
 );
 
-const consulta = `¡Hola ${negocio.nombre}! ¿Qué menú hay hoy?`;
+const cerrados = new Set(negocio.horarios.filter((h) => h.turnos.length === 0).map((h) => h.dia));
 ---
 
-<section id="menu-del-dia" class="scroll-mt-20 bg-crema-hueso py-12 sm:py-16">
-  <div class="contenedor">
-    <header class="max-w-2xl">
-      <p class="text-sm font-bold tracking-[0.2em] text-ladrillo uppercase">
-        Todo al horno
-      </p>
-      <h2 class="titulo-seccion mt-2 text-tinta">El menú de la semana</h2>
-      <p class="mt-3 text-lg text-tinta-suave">
-        Cambia todos los días. El de hoy va primero.
-      </p>
-    </header>
+<section id="menu-del-dia" class="caja grid gap-x-8 pt-36 pb-seccion md:grid-cols-12 md:pt-denso lg:gap-x-10">
+  <div class="md:col-span-7">
+    <div class="flex items-end justify-between gap-4 border-b-[3px] border-tinta pb-2">
+      <h2 class="cartel text-titulo-2">La semana</h2>
+      <p class="rotulo pb-1 text-tinta-suave">Cambia todos los días</p>
+    </div>
 
     {
-      !hayMenuCargado ? (
-        <div class="tarjeta mt-8 border-dashed border-ladrillo/40 p-6 text-center sm:p-10">
-          <p class="font-display text-2xl font-bold text-ladrillo">
-            Todavía no cargamos el menú de esta semana
-          </p>
-          <p class="mx-auto mt-3 max-w-lg text-tinta-suave">
-            Escribinos por WhatsApp y te contamos qué hay hoy. Cambia todos los
-            días y siempre es al horno.
-          </p>
-          <a
-            href={linkWhatsApp(consulta)}
-            target="_blank"
-            rel="noopener"
-            class="boton boton-primario mt-6"
-          >
-            Preguntar qué hay hoy
-          </a>
-        </div>
-      ) : (
+      hayMenuCargado ? (
         <>
-          <p
-            class="mt-8 hidden rounded-xl bg-white px-4 py-3 text-tinta-suave shadow-[var(--shadow-carta)]"
-            data-resumen-hoy
-            aria-live="polite"
-          />
-
-          <ul class="mt-6 flex flex-col gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
-            {dias.map((dia, i) => (
+          <ul>
+            {dias.map((d) => (
               <li
-                class="flex"
-                style={`order: ${i}`}
-                data-dia={dia.dia}
-                data-nombre={dia.nombre}
-                data-principal={dia.principal ?? ''}
-                data-guarnicion={dia.guarnicion ?? ''}
+                class="relative grid grid-cols-[3.25rem_1fr_auto] items-center gap-x-3 border-b border-tinta/15 py-3 hoy:bg-papel hoy:before:absolute hoy:before:inset-y-0 hoy:before:-left-gutter hoy:before:w-1.5 hoy:before:bg-ladrillo sm:grid-cols-[6.5rem_1fr_auto]"
+                data-dia={d.dia}
               >
-                <article class="tarjeta flex w-full flex-col gap-3 p-5 transition-shadow [&.es-hoy]:border-ladrillo [&.es-hoy]:border-2 [&.es-hoy]:bg-white [&.es-hoy]:shadow-[var(--shadow-flotante)]">
-                  <div class="flex items-start justify-between gap-3">
-                    <h3 class="font-display text-xl font-bold text-tinta">
-                      {dia.nombre}
-                    </h3>
-                    <p
-                      class="hidden shrink-0 rounded-full bg-ladrillo px-2.5 py-1 text-xs font-bold tracking-wide text-white uppercase [.es-hoy_&]:block"
-                      data-etiqueta-hoy
-                    >
-                      Hoy
-                    </p>
+                <p class="rotulo text-tinta-suave hoy:text-ladrillo">
+                  <span class="sm:hidden">{d.nombre.slice(0, 3)}</span>
+                  <span class="hidden sm:inline">{d.nombre}</span>
+                  <span class="hidden hoy:block">Hoy</span>
+                </p>
+
+                {d.principal ? (
+                  <div class="min-w-0">
+                    <p class="leading-snug font-semibold">{d.principal}</p>
+                    {d.guarnicion && <p class="text-chico text-tinta-suave">con {d.guarnicion}</p>}
+                    {(d.destacado || d.precio != null) && (
+                      <p class="rotulo mt-1 text-perejil">
+                        {[d.destacado, d.precio != null ? precio(d.precio) : null]
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </p>
+                    )}
                   </div>
+                ) : (
+                  <p class="text-tinta-suave">{cerrados.has(d.dia) ? 'Cerrado' : 'A confirmar'}</p>
+                )}
 
-                  {dia.principal ? (
-                    <div class="grow">
-                      <p class="text-lg leading-snug font-semibold text-tinta">
-                        {dia.principal}
-                      </p>
-                      {dia.guarnicion && (
-                        <p class="mt-1 text-tinta-suave">con {dia.guarnicion}</p>
+                {d.principal ? (
+                  <>
+                    <button
+                      type="button"
+                      class="btn-agregar solo-js"
+                      aria-label={`Agregar el menú del ${d.nombre.toLowerCase()} al pedido`}
+                      data-agregar
+                      data-id={`menu-${d.dia}`}
+                      data-item-nombre={`Menú del ${d.nombre.toLowerCase()}: ${d.principal}`}
+                      data-precio={d.precio ?? ''}
+                      data-origen="menu"
+                    >
+                    </button>
+                    <a
+                      href={linkWhatsApp(
+                        `¡Hola ${negocio.nombre}! Quería pedir el menú del ${d.nombre.toLowerCase()}: ${d.principal}.`,
                       )}
-                      {dia.destacado && (
-                        <p class="mt-3 inline-block rounded-full bg-mostaza/25 px-3 py-1 text-sm font-semibold text-tinta">
-                          {dia.destacado}
-                        </p>
-                      )}
-                    </div>
-                  ) : (
-                    <p class="grow text-tinta-suave">
-                      {dia.dia === 'domingo'
-                        ? 'Los domingos no abrimos.'
-                        : 'A confirmar. Consultanos por WhatsApp.'}
-                    </p>
-                  )}
-
-                  {dia.principal && (
-                    <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-crema-borde pt-3">
-                      <p class="font-display text-lg font-bold text-ladrillo">
-                        {precio(dia.precio)}
-                      </p>
-
-                      <button
-                        type="button"
-                        class="boton boton-primario solo-js !min-h-11 !px-4 !py-2 text-sm"
-                        data-agregar
-                        data-id={`menu-${dia.dia}`}
-                        data-item-nombre={`Menú del ${dia.nombre.toLowerCase()}: ${dia.principal}`}
-                        data-precio={dia.precio ?? ''}
-                        data-origen="menu"
-                      >
-                        Pedir este menú
-                      </button>
-
-                      <a
-                        href={linkWhatsApp(
-                          `¡Hola ${negocio.nombre}! Quería pedir el menú del ${dia.nombre.toLowerCase()}: ${dia.principal}.`,
-                        )}
-                        target="_blank"
-                        rel="noopener"
-                        class="boton boton-primario sin-js !min-h-11 !px-4 !py-2 text-sm"
-                      >
-                        Pedir este menú
-                      </a>
-                    </div>
-                  )}
-                </article>
+                      target="_blank"
+                      rel="noopener"
+                      class="enlace sin-js inline-flex min-h-11 items-center font-semibold text-ladrillo"
+                    >
+                      Pedir
+                    </a>
+                  </>
+                ) : (
+                  <span />
+                )}
               </li>
             ))}
           </ul>
-
-          <p class="mt-6 text-sm text-tinta-suave">
-            Los precios son informativos: confirmalos al hacer el pedido.
+          <p class="mt-4 text-chico text-tinta-suave">
+            Los precios son informativos: te los confirmamos por WhatsApp al hacer el pedido.
           </p>
         </>
+      ) : (
+        <div class="py-6">
+          <p class="text-lead">Todavía no cargamos el menú de esta semana.</p>
+          <p class="mt-2 max-w-xl text-tinta-suave">
+            Cambia todos los días: escribinos por WhatsApp y te contamos qué hay hoy. Y la carta
+            está siempre: milanesas, pastas caseras, tartas, empanadas y pizzas.
+          </p>
+          <a href="#carta" class="btn btn-linea mt-5">Ver la carta</a>
+        </div>
       )
     }
   </div>
+
+  <aside class="hidden md:col-span-5 md:flex md:flex-col md:items-center md:gap-6 md:pt-40 lg:pt-48" aria-label="Cómo trabajamos">
+    <Sello class="w-40 lg:w-56" giro={-12} />
+    <ul class="rotulo flex flex-col items-center gap-1 text-tinta-suave">
+      <li>Pedidos por WhatsApp</li>
+      <li>Delivery propio · radio limitado</li>
+      <li>Retiro en {negocio.direccion.calle}</li>
+    </ul>
+  </aside>
 </section>
-
-<script>
-  import { diaDeHoy } from '../lib/horarios';
-  import negocio from '../data/negocio.json';
-
-  /**
-   * Marca el dia de hoy y lo pone primero en la grilla.
-   * Corre en el navegador porque el sitio es estatico: el build no sabe que
-   * dia va a ser cuando alguien entre.
-   */
-  function marcarHoy() {
-    const hoy = diaDeHoy(negocio.zonaHoraria);
-    const tarjetas = document.querySelectorAll<HTMLLIElement>('[data-dia]');
-    if (tarjetas.length === 0) return;
-
-    for (const li of tarjetas) {
-      const esHoy = li.dataset.dia === hoy;
-      li.querySelector('article')?.classList.toggle('es-hoy', esHoy);
-      // `order` negativo lo lleva al principio sin tocar el HTML.
-      li.style.order = esHoy ? '-1' : li.style.order;
-
-      if (esHoy) {
-        const resumen = document.querySelector<HTMLElement>('[data-resumen-hoy]');
-        const principal = li.dataset.principal;
-        if (resumen && principal) {
-          const guarnicion = li.dataset.guarnicion;
-          resumen.textContent = guarnicion
-            ? `Hoy ${li.dataset.nombre?.toLowerCase()}: ${principal} con ${guarnicion}.`
-            : `Hoy ${li.dataset.nombre?.toLowerCase()}: ${principal}.`;
-          resumen.classList.remove('hidden');
-        }
-      }
-    }
-  }
-
-  marcarHoy();
-  // Si alguien deja la pestana abierta cruzando la medianoche.
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) marcarHoy();
-  });
-</script>
